@@ -3,228 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bosbos Store</title>
+    <title>Bosbos - Premium Brand</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'product-hover': 'productHover 0.3s ease-in-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        productHover: {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '100%': { transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 600px;
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
         }
     </style>
 </head>
-<body class="bg-gray-100">
-    <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center my-6">
-            <h1 class="text-3xl font-bold">Bosbos Store</h1>
-            <div>
-                <button id="cart-btn" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Cart (<span id="cart-count">0</span>)
-                </button>
+<body class="font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-md p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-600">Bosbos</div>
+            <div class="space-x-4">
+                <a href="#" class="hover:text-blue-600 transition">Home</a>
+                <a href="#products" class="hover:text-blue-600 transition">Products</a>
+                <a href="#" class="hover:text-blue-600 transition">Cart</a>
             </div>
         </div>
-        
-        <div id="products" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Products will be dynamically added here -->
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="text-center py-16 animate-fade-in">
+        <h1 class="text-5xl font-bold text-gray-800 mb-4">Welcome to Bosbos</h1>
+        <p class="text-xl text-gray-600 mb-8">Elevate Your Style with Premium Designs</p>
+        <a href="#products" class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-colors">
+            Explore Collection
+        </a>
+    </header>
+
+    <!-- Products Section -->
+    <section id="products" class="container mx-auto px-4 py-12">
+        <h2 class="text-3xl font-bold text-center mb-12">Our Products</h2>
+        <div id="product-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Products will be dynamically inserted here -->
         </div>
-    </div>
+    </section>
 
-    <!-- Product Modal -->
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-modal" class="float-right cursor-pointer text-2xl">&times;</span>
-            <div id="modal-details">
-                <!-- Product details will be dynamically inserted here -->
-            </div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Bosbos. All rights reserved.</p>
         </div>
-    </div>
+    </footer>
 
-    <!-- Cart Modal -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <span id="close-cart-modal" class="float-right cursor-pointer text-2xl">&times;</span>
-            <h2 class="text-2xl font-bold mb-4">Your Cart</h2>
-            <div id="cart-items">
-                <!-- Cart items will be dynamically inserted here -->
-            </div>
-            <div id="cart-total" class="mt-4 text-xl font-bold">
-                Total: $0.00
-            </div>
-            <button id="checkout-btn" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">
-                Checkout
-            </button>
-        </div>
-    </div>
-
-    <script>
-        // Product Data
-        const products = [
-            {
-                id: 1,
-                name: 'Classic T-Shirt',
-                price: 29.99,
-                description: 'Comfortable cotton t-shirt with modern design',
-                image: 'https://via.placeholder.com/300x400?text=T-Shirt',
-                sizes: ['S', 'M', 'L', 'XL']
-            },
-            {
-                id: 2,
-                name: 'Stylish Hoodie',
-                price: 59.99,
-                description: 'Warm and cozy hoodie for all seasons',
-                image: 'https://via.placeholder.com/300x400?text=Hoodie',
-                sizes: ['M', 'L', 'XL']
-            },
-            {
-                id: 3,
-                name: 'Urban Cap',
-                price: 24.99,
-                description: 'Trendy cap with adjustable strap',
-                image: 'https://via.placeholder.com/300x400?text=Cap',
-                sizes: ['One Size']
-            }
-        ];
-
-        // State Management
-        let cart = [];
-
-        // Render Products
-        function renderProducts() {
-            const productsContainer = document.getElementById('products');
-            productsContainer.innerHTML = '';
-            
-            products.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition';
-                
-                productCard.innerHTML = `
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-64 object-cover">
-                    <div class="p-4">
-                        <h2 class="text-xl font-bold mb-2">${product.name}</h2>
-                        <p class="text-gray-600 mb-2">${product.description}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg font-semibold">$${product.price}</span>
-                        </div>
-                    </div>
-                `;
-                
-                // Add click event to show product details
-                productCard.addEventListener('click', () => showProductDetails(product));
-                
-                productsContainer.appendChild(productCard);
-            });
-        }
-
-        // Show Product Details Modal
-        function showProductDetails(product) {
-            const modalDetails = document.getElementById('modal-details');
-            modalDetails.innerHTML = `
-                <div class="flex">
-                    <img src="${product.image}" alt="${product.name}" class="w-1/2 object-cover mr-4">
-                    <div>
-                        <h2 class="text-2xl font-bold mb-2">${product.name}</h2>
-                        <p class="text-gray-600 mb-4">${product.description}</p>
-                        <p class="text-xl font-semibold mb-2">$${product.price}</p>
-                        <div class="mb-4">
-                            <label class="block mb-2">Select Size:</label>
-                            <select id="size-select" class="border rounded p-2">
-                                ${product.sizes.map(size => `<option value="${size}">${size}</option>`).join('')}
-                            </select>
-                        </div>
-                        <button onclick="addToCart(${product.id})" class="bg-blue-500 text-white px-4 py-2 rounded">
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('product-modal').style.display = 'block';
-        }
-
-        // Add to Cart
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            const selectedSize = document.getElementById('size-select')?.value;
-            
-            if (product) {
-                const cartItem = {
-                    ...product,
-                    size: selectedSize
-                };
-                cart.push(cartItem);
-                updateCartDisplay();
-                document.getElementById('product-modal').style.display = 'none';
-            }
-        }
-
-        // Update Cart Display
-        function updateCartDisplay() {
-            const cartCount = document.getElementById('cart-count');
-            const cartItems = document.getElementById('cart-items');
-            const cartTotal = document.getElementById('cart-total');
-            
-            cartCount.textContent = cart.length;
-            
-            // Render cart items
-            cartItems.innerHTML = cart.map((item, index) => `
-                <div class="flex justify-between items-center mb-2 pb-2 border-b">
-                    <div>
-                        <p class="font-bold">${item.name}</p>
-                        <p class="text-sm text-gray-600">Size: ${item.size}</p>
-                        <p>$${item.price}</p>
-                    </div>
-                    <button onclick="removeFromCart(${index})" class="text-red-500">Remove</button>
-                </div>
-            `).join('');
-            
-            // Calculate total
-            const total = cart.reduce((sum, item) => sum + item.price, 0);
-            cartTotal.textContent = `Total: $${total.toFixed(2)}`;
-        }
-
-        // Remove from Cart
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            updateCartDisplay();
-        }
-
-        // Modal Close Handlers
-        document.getElementById('close-modal').addEventListener('click', () => {
-            document.getElementById('product-modal').style.display = 'none';
-        });
-
-        document.getElementById('cart-btn').addEventListener('click', () => {
-            document.getElementById('cart-modal').style.display = 'block';
-        });
-
-        document.getElementById('close-cart-modal').addEventListener('click', () => {
-            document.getElementById('cart-modal').style.display = 'none';
-        });
-
-        // Checkout Handler
-        document.getElementById('checkout-btn').addEventListener('click', () => {
-            alert(`Checkout completed! Total: $${cart.reduce((sum, item) => sum + item.price, 0).toFixed(2)}`);
-            cart = [];
-            updateCartDisplay();
-            document.getElementById('cart-modal').style.display = 'none';
-        });
-
-        // Initial Render
-        document.addEventListener('DOMContentLoaded', renderProducts);
-    </script>
+    <script src="products.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
