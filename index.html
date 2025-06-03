@@ -307,8 +307,9 @@
   <div id="mw-info" style="margin-top:1rem;"></div>
   <div id="mw-player"></div>
   <div id="mw-guess" style="display: none; margin-top:1rem;"></div>
+  <div id="mw-word-guess" style="display:none; margin-top:1rem;"></div>
 </div>
-
+  
 <!-- Modal Popup -->
 <div id="modal-overlay">
   <div id="modal">
@@ -587,9 +588,20 @@
 
   function showGuessButtons() {
     mwGuessDiv.innerHTML = `
-      <p>Guess who is Mr. White!</p>
+      <p>Vote: Who do you think is Mr. White?</p>
       ${mwPlayers.map(p => `<button class="guess-btn" data-id="${p.id}">${p.name || ("Player " + p.id)}</button>`).join('')}
     `;
+
+    const buttons = mwGuessDiv.querySelectorAll('.guess-btn');
+    buttons.forEach(btn => {
+      btn.onclick = () => {
+        const voteId = parseInt(btn.getAttribute('data-id'));
+        startWordGuess(voteId);
+      };
+    });
+
+    mwGuessDiv.style.display = 'block';
+  }
 
     const buttons = mwGuessDiv.querySelectorAll('.guess-btn');
     buttons.forEach(btn => {
@@ -608,7 +620,60 @@
       };
     });
   }
+// Start word guess phase for the voted player
+  function startWordGuess(votedPlayerId) {
+    const votedPlayer = mwPlayers.find(p => p.id === votedPlayerId);
 
+    mwGuessDiv.style.display = 'none';
+
+    // Show input for guessed player to guess the word
+    mwWordGuessDiv = document.getElementById('mw-word-guess');
+    mwWordGuessDiv.style.display = 'block';
+    mwWordGuessDiv.innerHTML = `
+      <p>${votedPlayer.name}, you have been voted as Mr. White.<br> Please guess the secret word:</p>
+      <input type="text" id="word-guess-input" placeholder="Type the word here" autofocus />
+      <br/>
+      <button id="submit-word-guess" disabled>Submit Guess</button>
+    `;
+
+    const input = document.getElementById('word-guess-input');
+    const btn = document.getElementById('submit-word-guess');
+
+    input.addEventListener('input', () => {
+      btn.disabled = input.value.trim() === '';
+    });
+
+    btn.onclick = () => {
+      const guess = input.value.trim().toLowerCase();
+      const actualWord = mwPlayers.find(p => p.role === 'civilian').word.toLowerCase();
+
+      mwWordGuessDiv.style.display = 'none';
+
+      if (guess === actualWord) {
+        // Guessed word right
+        if (votedPlayer.role === 'white') {
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word correctly.<br> Mr. White wins! 😎</strong>`;
+        } else {
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word correctly.<br> Civilians win! 🎉</strong>`;
+        }
+      } else {
+        // Guessed word wrong
+        if (votedPlayer.role === 'white') {
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word incorrectly.<br> Civilians win! 🎉</strong>`;
+        } else {
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word incorrectly.<br> Mr. White wins! 😎</strong>`;
+        }
+      }
+
+      mwGuessDiv.innerHTML = `<button id="restart-mw">Restart Game</button>`;
+      mwGuessDiv.style.display = 'block';
+      document.getElementById('restart-mw').onclick = () => {
+        resetMisterWhite();
+      };
+    };
+
+    input.focus();
+  }
   function resetMisterWhite() {
     gameStarted = false;
     mwPlayers = [];
