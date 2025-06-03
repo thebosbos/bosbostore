@@ -162,6 +162,23 @@
       margin-bottom: 1rem;
     }
 
+    #mister-white-settings {
+      margin-bottom: 1rem;
+    }
+
+    #mister-white-settings label {
+      font-size: 1.1rem;
+    }
+
+    #mister-white-settings input {
+      margin-left: 0.3rem;
+      border-radius: 6px;
+      border: none;
+      padding: 0.3rem 0.5rem;
+      font-size: 1rem;
+      text-align: center;
+    }
+
     #mw-info {
       margin-top: 1rem;
       font-size: 1.3rem;
@@ -213,6 +230,16 @@
   <!-- Mister White Game Container -->
   <div id="mister-white-container" style="display: none;">
     <h2>Mister White</h2>
+    <div id="mister-white-settings">
+      <label>
+        Number of Players:
+        <input type="number" id="numPlayers" min="3" max="10" value="4" />
+      </label>
+      <label style="margin-left: 1rem;">
+        Number of Mr. Whites:
+        <input type="number" id="numWhites" min="1" max="3" value="1" />
+      </label>
+    </div>
     <button id="start-mister-white">Start Game</button>
     <div id="mw-info"></div>
     <div id="mw-player"></div>
@@ -336,51 +363,46 @@
       });
 
       gameArea.addEventListener('touchmove', e => {
-        if (!dragging || isGameOver) return;
+        if (!dragging) return;
+        e.preventDefault();
         const rect = gameArea.getBoundingClientRect();
         const fingerX = e.touches[0].clientX - rect.left;
         setPlayerX(fingerX - playerWidth / 2);
+      }, { passive: false });
+
+      gameArea.addEventListener('touchend', e => {
+        dragging = false;
       });
 
-      gameArea.addEventListener('touchend', () => dragging = false);
-      gameArea.addEventListener('touchcancel', () => dragging = false);
+      // Keyboard controls (for desktop)
+      window.addEventListener('keydown', e => {
+        if (isGameOver || startButton.style.display !== 'none') return;
+        if (e.key === 'ArrowLeft') {
+          setPlayerX(playerX - 20);
+        } else if (e.key === 'ArrowRight') {
+          setPlayerX(playerX + 20);
+        }
+      });
 
-      // Start button
       startButton.addEventListener('click', startGame);
-
-      // Keyboard controls
-      document.addEventListener('keydown', e => {
-        if (isGameOver) return;
-        if (e.key === 'ArrowLeft' || e.key === 'a') setPlayerX(playerX - 20);
-        if (e.key === 'ArrowRight' || e.key === 'd') setPlayerX(playerX + 20);
-      });
     });
 
     // =========== Mister White Game Code ===========
     const wordList = [
-      'Apple', 'Tiger', 'River', 'Guitar', 'Rocket',
-      'Moon', 'Ocean', 'Pencil', 'Pizza', 'Castle',
-      'Forest', 'Camera', 'Phone', 'Clock', 'Cloud',
-      'Shoe', 'Star', 'Mountain', 'Laptop', 'Chair',
-      'Car', 'Book', 'Tree', 'Coffee', 'Bottle',
-      'Window', 'Ball', 'Cat', 'Dog', 'Bread',
-      'Door', 'Fish', 'House', 'Ice', 'Key',
-      'Lamp', 'Map', 'Nose', 'Orange', 'Pen',
-      'Queen', 'Road', 'Sun', 'Table', 'Umbrella',
-      'Van', 'Water', 'Xylophone', 'Yacht', 'Zoo',
-      'Garden', 'Hat', 'Island', 'Jacket', 'Kite',
-      'Leaf', 'Milk', 'Nest', 'Ocean', 'Pillow',
-      'Quilt', 'Ring', 'Snow', 'Tree', 'Vase'
+      'apple', 'banana', 'cat', 'dog', 'elephant', 'forest', 'garden', 'house',
+      'island', 'jungle', 'kite', 'lemon', 'mountain', 'night', 'ocean',
+      'piano', 'queen', 'river', 'sun', 'tree', 'umbrella', 'violet', 'water',
+      'xylophone', 'yellow', 'zebra'
     ];
 
     let mwPlayers = [];
     let currentPlayerIndex = 0;
     let gameStarted = false;
 
-    const mwStartBtn = document.getElementById('start-mister-white');
     const mwInfo = document.getElementById('mw-info');
     const mwPlayerDiv = document.getElementById('mw-player');
     const mwGuessDiv = document.getElementById('mw-guess');
+    const mwStartBtn = document.getElementById('start-mister-white');
 
     function shuffleArray(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -391,17 +413,26 @@
     }
 
     function startMisterWhiteGame() {
-      // Pick a random word for civilians
-      const word = wordList[Math.floor(Math.random() * wordList.length)];
-      
-      const totalPlayers = 4; // fixed 4 players, can be expanded
-      // Assign roles: 3 civilians + 1 white
-      const roles = Array(totalPlayers - 1).fill('civilian');
-      roles.push('white');
-      const shuffledRoles = shuffleArray(roles);
+      const totalPlayers = parseInt(document.getElementById('numPlayers').value);
+      let numWhites = parseInt(document.getElementById('numWhites').value);
 
-      mwPlayers = shuffledRoles.map((role, index) => ({
-        id: index + 1,
+      if (isNaN(totalPlayers) || totalPlayers < 3) {
+        alert('There must be at least 3 players.');
+        return;
+      }
+      if (isNaN(numWhites) || numWhites < 1) numWhites = 1;
+      if (numWhites >= totalPlayers) {
+        alert('Number of Mr. Whites must be less than total players.');
+        return;
+      }
+
+      // Select random word for civilians
+      const word = wordList[Math.floor(Math.random() * wordList.length)];
+
+      // Assign roles
+      const roles = Array(totalPlayers - numWhites).fill('civilian').concat(Array(numWhites).fill('white'));
+      mwPlayers = shuffleArray(roles).map((role, idx) => ({
+        id: idx + 1,
         role,
         word: role === 'civilian' ? word : null
       }));
@@ -417,67 +448,72 @@
     }
 
     function showPlayerWord() {
+      if (!gameStarted) return;
       if (currentPlayerIndex >= mwPlayers.length) {
-        // All players saw their words, now guess phase
-        startGuessPhase();
+        mwInfo.innerHTML = `<strong>All players have seen their roles!</strong>`;
+        mwPlayerDiv.innerHTML = '';
+        mwGuessDiv.style.display = 'block';
+        showGuessButtons();
         return;
       }
+
       const player = mwPlayers[currentPlayerIndex];
-      mwPlayerDiv.innerHTML = `
-        <p><strong>Player ${player.id}</strong>, it's your turn!</p>
-        <p>Your role is: <strong>${player.role === 'white' ? 'Mr. White' : 'Civilian'}</strong></p>
-        <p>Your word is: <strong>${player.word ? player.word : '(You have NO word!)'}</strong></p>
-        <button id="mw-next">Next Player</button>
-      `;
-      document.getElementById('mw-next').onclick = () => {
-        currentPlayerIndex++;
-        showPlayerWord();
+      mwInfo.innerHTML = `Player ${player.id}, tap below to see your word/role.`;
+      mwPlayerDiv.innerHTML = `<button id="reveal-word">Reveal Word/Role</button>`;
+      mwGuessDiv.style.display = 'none';
+
+      document.getElementById('reveal-word').onclick = () => {
+        if (player.role === 'civilian') {
+          mwPlayerDiv.innerHTML = `<p><strong>Civilian</strong><br>Word: <em>${player.word}</em></p><button id="next-player">Next Player</button>`;
+        } else {
+          mwPlayerDiv.innerHTML = `<p><strong>Mr. White</strong><br>You have NO word!</p><button id="next-player">Next Player</button>`;
+        }
+
+        document.getElementById('next-player').onclick = () => {
+          currentPlayerIndex++;
+          mwPlayerDiv.innerHTML = '';
+          showPlayerWord();
+        };
       };
     }
 
-    function startGuessPhase() {
-      mwPlayerDiv.innerHTML = '';
-      mwInfo.innerHTML = `<p>All players have seen their words.</p><p>Now, guess who is Mr. White!</p>`;
-      mwGuessDiv.style.display = 'block';
-      mwGuessDiv.innerHTML = mwPlayers.map(p => `
-        <button data-id="${p.id}">Player ${p.id}</button>
-      `).join('');
+    function showGuessButtons() {
+      mwGuessDiv.innerHTML = `
+        <p>Guess who is Mr. White!</p>
+        ${mwPlayers.map(p => `<button class="guess-btn" data-id="${p.id}">Player ${p.id}</button>`).join('')}
+      `;
 
-      mwGuessDiv.querySelectorAll('button').forEach(btn => {
+      const buttons = mwGuessDiv.querySelectorAll('.guess-btn');
+      buttons.forEach(btn => {
         btn.onclick = () => {
-          const guessedId = parseInt(btn.getAttribute('data-id'));
-          revealResult(guessedId);
+          const guessId = parseInt(btn.getAttribute('data-id'));
+          const guessedPlayer = mwPlayers.find(p => p.id === guessId);
+          if (guessedPlayer.role === 'white') {
+            mwInfo.innerHTML = `<strong>You guessed right! Player ${guessId} is Mr. White! 🎉</strong>`;
+          } else {
+            mwInfo.innerHTML = `<strong>Wrong! Player ${guessId} is not Mr. White.</strong>`;
+          }
+          mwGuessDiv.innerHTML = `<button id="restart-mw">Restart Game</button>`;
+          document.getElementById('restart-mw').onclick = () => {
+            resetMisterWhite();
+          };
         };
       });
     }
 
-    function revealResult(guessedId) {
-      const whitePlayer = mwPlayers.find(p => p.role === 'white');
+    function resetMisterWhite() {
+      gameStarted = false;
+      mwPlayers = [];
+      currentPlayerIndex = 0;
       mwInfo.innerHTML = '';
+      mwPlayerDiv.innerHTML = '';
       mwGuessDiv.style.display = 'none';
-
-      if (guessedId === whitePlayer.id) {
-        mwInfo.innerHTML = `<p>You guessed Player ${guessedId} correctly! Mr. White loses.</p>`;
-      } else {
-        mwInfo.innerHTML = `<p>Wrong! Player ${whitePlayer.id} was Mr. White and wins.</p>`;
-      }
-      mwStartBtn.textContent = 'Play Again';
+      mwGuessDiv.innerHTML = '';
       mwStartBtn.style.display = 'inline-block';
     }
 
-    mwStartBtn.onclick = () => {
-      if (!gameStarted) {
-        startMisterWhiteGame();
-      } else {
-        // Restart
-        gameStarted = false;
-        mwInfo.innerHTML = '';
-        mwPlayerDiv.innerHTML = '';
-        mwGuessDiv.style.display = 'none';
-        mwStartBtn.textContent = 'Start Game';
-      }
-    };
-  </script>
+    mwStartBtn.addEventListener('click', startMisterWhiteGame);
 
+  </script>
 </body>
 </html>
