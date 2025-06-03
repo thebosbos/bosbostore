@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Simple Arcade Game - Mobile Friendly</title>
+<title>Simple Arcade Game - Centered Start Button</title>
 <style>
-  /* Reset & basics */
   * {
     margin: 0;
     padding: 0;
@@ -28,36 +27,15 @@
     max-width: 480px;
     padding: 1.5rem 2rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     background-color: rgba(0,0,0,0.3);
     border-radius: 12px;
     margin-top: 2rem;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  }
-  .logo {
-    font-size: 1.75rem;
     font-weight: 700;
+    font-size: 1.75rem;
     letter-spacing: 2px;
-  }
-  #start-game {
-    background: #5f27cd;
-    border: none;
-    padding: 0.6rem 1.4rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 30px;
-    cursor: pointer;
-    color: white;
-    transition: background 0.3s ease;
-    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.5);
-  }
-  #start-game:hover {
-    background: #341f97;
-    box-shadow: 0 6px 20px rgba(52, 31, 151, 0.7);
-  }
-  #start-game:active {
-    transform: scale(0.95);
   }
 
   /* Game area */
@@ -115,6 +93,34 @@
     width: 100%;
     text-align: center;
     user-select: none;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Start Button - centered over game area */
+  #start-game {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #5f27cd;
+    border: none;
+    padding: 1rem 3rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
+    transition: background 0.3s ease;
+    z-index: 10;
+    user-select: none;
+  }
+  #start-game:hover {
+    background: #341f97;
+    box-shadow: 0 10px 30px rgba(52, 31, 151, 0.9);
+  }
+  #start-game:active {
+    transform: translate(-50%, -50%) scale(0.95);
   }
 
   /* Controls for mobile */
@@ -173,13 +179,11 @@
 </head>
 <body>
 
-<nav id="navbar">
-  <div class="logo">Simple Arcade</div>
-  <button id="start-game">Start Game</button>
-</nav>
+<nav id="navbar">Simple Arcade</nav>
 
 <div id="game-area">
   <div id="player"></div>
+  <button id="start-game">Start Game</button>
 </div>
 
 <div id="mobile-controls">
@@ -285,18 +289,14 @@
       if (gameInterval) clearInterval(gameInterval);
       gameInterval = setInterval(gameLoop, 1000 / 60);
 
-      startButton.disabled = true;
-      startButton.style.opacity = 0.6;
-      startButton.style.cursor = 'not-allowed';
+      startButton.style.display = 'none';
     }
 
     function endGame() {
       isGameOver = true;
       clearInterval(gameInterval);
-      alert(`Game Over! Your score: ${score}`);
-      startButton.disabled = false;
-      startButton.style.opacity = 1;
-      startButton.style.cursor = 'pointer';
+      startButton.textContent = `Game Over! Score: ${score}\nClick to Restart`;
+      startButton.style.display = 'block';
     }
 
     document.addEventListener('keydown', e => {
