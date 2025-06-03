@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Arcade Game - Beautiful</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Simple Arcade Game - Mobile Friendly</title>
 <style>
   /* Reset & basics */
   * {
@@ -117,6 +117,36 @@
     user-select: none;
   }
 
+  /* Controls for mobile */
+  #mobile-controls {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    user-select: none;
+  }
+  .control-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(95, 39, 205, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    color: white;
+    user-select: none;
+  }
+  .control-btn:active {
+    background: #341f97;
+    box-shadow: 0 6px 20px rgba(52, 31, 151, 0.9);
+  }
+
   /* Responsive */
   @media (max-width: 520px) {
     #game-area {
@@ -128,6 +158,15 @@
     }
     #player {
       bottom: 15px;
+    }
+    #mobile-controls {
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .control-btn {
+      width: 70px;
+      height: 70px;
+      font-size: 2rem;
     }
   }
 </style>
@@ -143,6 +182,11 @@
   <div id="player"></div>
 </div>
 
+<div id="mobile-controls">
+  <div id="left-btn" class="control-btn" aria-label="Move Left">&#8592;</div>
+  <div id="right-btn" class="control-btn" aria-label="Move Right">&#8594;</div>
+</div>
+
 <div id="score">Score: 0</div>
 
 <script>
@@ -152,6 +196,9 @@
     const startButton = document.getElementById('start-game');
     const scoreDisplay = document.getElementById('score');
 
+    const leftBtn = document.getElementById('left-btn');
+    const rightBtn = document.getElementById('right-btn');
+
     let gameInterval;
     let blocks = [];
     let score = 0;
@@ -159,7 +206,6 @@
 
     let gameWidth, gameHeight, playerWidth, playerHeight;
 
-    // Initialize sizes (also update on resize)
     function updateSizes() {
       gameWidth = gameArea.clientWidth;
       gameHeight = gameArea.clientHeight;
@@ -169,8 +215,8 @@
     updateSizes();
     window.addEventListener('resize', updateSizes);
 
-    let playerX = 220; // initial left position
-    const playerSpeed = 25; // px per key press
+    let playerX = 220;
+    const playerSpeed = 25;
 
     function movePlayer(dir) {
       if (dir === 'left') {
@@ -194,7 +240,7 @@
     function updateBlocks() {
       for (let i = blocks.length - 1; i >= 0; i--) {
         const b = blocks[i];
-        b.y += 6; // falling speed
+        b.y += 6;
         if (b.y > gameHeight) {
           gameArea.removeChild(b.el);
           blocks.splice(i, 1);
@@ -202,7 +248,6 @@
         }
         b.el.style.top = b.y + 'px';
 
-        // Collision detection
         if (
           b.y + 50 > gameHeight - playerHeight - 20 &&
           b.x < playerX + playerWidth &&
@@ -221,7 +266,7 @@
       score++;
       scoreDisplay.textContent = 'Score: ' + score;
 
-      if (Math.random() < 0.04) { // increase spawn rate slightly
+      if (Math.random() < 0.04) {
         createBlock();
       }
     }
@@ -262,6 +307,56 @@
         movePlayer('right');
       }
     });
+
+    // Mobile touch controls - continuous movement while holding
+    let leftPressed = false;
+    let rightPressed = false;
+
+    function touchStartHandler(dir) {
+      if (isGameOver) return;
+      if (dir === 'left') leftPressed = true;
+      else if (dir === 'right') rightPressed = true;
+    }
+    function touchEndHandler(dir) {
+      if (dir === 'left') leftPressed = false;
+      else if (dir === 'right') rightPressed = false;
+    }
+
+    leftBtn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartHandler('left');
+    });
+    leftBtn.addEventListener('touchend', e => {
+      e.preventDefault();
+      touchEndHandler('left');
+    });
+    leftBtn.addEventListener('touchcancel', e => {
+      e.preventDefault();
+      touchEndHandler('left');
+    });
+
+    rightBtn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartHandler('right');
+    });
+    rightBtn.addEventListener('touchend', e => {
+      e.preventDefault();
+      touchEndHandler('right');
+    });
+    rightBtn.addEventListener('touchcancel', e => {
+      e.preventDefault();
+      touchEndHandler('right');
+    });
+
+    // Update player position continuously on mobile when buttons pressed
+    function mobileControlLoop() {
+      if (!isGameOver) {
+        if (leftPressed) movePlayer('left');
+        if (rightPressed) movePlayer('right');
+      }
+      requestAnimationFrame(mobileControlLoop);
+    }
+    mobileControlLoop();
 
     startButton.addEventListener('click', startGame);
   });
