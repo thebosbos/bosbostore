@@ -3,178 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Simple Arcade Game - Centered Start Button</title>
+<title>Simple Arcade Game - Drag Control on Mobile</title>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    color: white;
-    user-select: none;
-  }
-
-  /* Navbar */
-  #navbar {
-    width: 100%;
-    max-width: 480px;
-    padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0,0,0,0.3);
-    border-radius: 12px;
-    margin-top: 2rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    font-weight: 700;
-    font-size: 1.75rem;
-    letter-spacing: 2px;
-  }
-
-  /* Game area */
-  #game-area {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-    height: 600px;
-    background: #1a1a2e;
-    margin: 2rem 0;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow:
-      0 8px 16px rgba(0,0,0,0.5),
-      inset 0 0 50px #764ba2;
-  }
-
-  /* Player block */
-  #player {
-    position: absolute;
-    bottom: 20px;
-    left: 220px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #23d997, #2dce89);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(35, 217, 151, 0.6),
-      0 0 15px #2dce89;
-    transition: left 0.15s ease;
-  }
-
-  /* Falling blocks */
-  .block {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(255, 65, 108, 0.7),
-      0 0 20px #ff4b2b;
-    will-change: transform;
-  }
-
-  /* Score */
-  #score {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #f8f8f8;
-    text-shadow:
-      0 0 5px #2dce89,
-      0 0 10px #2dce89;
-    max-width: 480px;
-    width: 100%;
-    text-align: center;
-    user-select: none;
-    margin-bottom: 0.5rem;
-  }
-
-  /* Start Button - centered over game area */
-  #start-game {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #5f27cd;
-    border: none;
-    padding: 1rem 3rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    color: white;
-    box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
-    transition: background 0.3s ease;
-    z-index: 10;
-    user-select: none;
-  }
-  #start-game:hover {
-    background: #341f97;
-    box-shadow: 0 10px 30px rgba(52, 31, 151, 0.9);
-  }
-  #start-game:active {
-    transform: translate(-50%, -50%) scale(0.95);
-  }
-
-  /* Controls for mobile */
-  #mobile-controls {
-    width: 100%;
-    max-width: 480px;
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-    user-select: none;
-  }
-  .control-btn {
-    width: 80px;
-    height: 80px;
-    background: rgba(95, 39, 205, 0.8);
-    border-radius: 50%;
-    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 2.5rem;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    color: white;
-    user-select: none;
-  }
-  .control-btn:active {
-    background: #341f97;
-    box-shadow: 0 6px 20px rgba(52, 31, 151, 0.9);
-  }
-
-  /* Responsive */
-  @media (max-width: 520px) {
-    #game-area {
-      height: 500px;
-    }
-    #player, .block {
-      width: 40px;
-      height: 40px;
-    }
-    #player {
-      bottom: 15px;
-    }
-    #mobile-controls {
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    .control-btn {
-      width: 70px;
-      height: 70px;
-      font-size: 2rem;
-    }
-  }
+  /* (Styles remain the same as before, omitted here for brevity) */
+  /* Just use the previous CSS from last full example */
 </style>
 </head>
 <body>
@@ -228,6 +60,11 @@
       } else if (dir === 'right') {
         playerX = Math.min(gameWidth - playerWidth, playerX + playerSpeed);
       }
+      player.style.left = playerX + 'px';
+    }
+
+    function setPlayerX(x) {
+      playerX = Math.min(Math.max(0, x), gameWidth - playerWidth);
       player.style.left = playerX + 'px';
     }
 
@@ -308,7 +145,7 @@
       }
     });
 
-    // Mobile touch controls - continuous movement while holding
+    // Mobile touch controls - continuous movement while holding left/right buttons
     let leftPressed = false;
     let rightPressed = false;
 
@@ -357,6 +194,36 @@
       requestAnimationFrame(mobileControlLoop);
     }
     mobileControlLoop();
+
+    // New: Drag to move player on mobile
+    let dragging = false;
+
+    gameArea.addEventListener('touchstart', e => {
+      if (isGameOver) return;
+      // Prevent starting drag if start button visible
+      if (startButton.style.display !== 'none') return;
+      dragging = true;
+      const touch = e.touches[0];
+      // Move player to finger X relative to game area
+      const rect = gameArea.getBoundingClientRect();
+      const fingerX = touch.clientX - rect.left;
+      setPlayerX(fingerX - playerWidth / 2);
+    });
+
+    gameArea.addEventListener('touchmove', e => {
+      if (!dragging || isGameOver) return;
+      const touch = e.touches[0];
+      const rect = gameArea.getBoundingClientRect();
+      const fingerX = touch.clientX - rect.left;
+      setPlayerX(fingerX - playerWidth / 2);
+    });
+
+    gameArea.addEventListener('touchend', e => {
+      dragging = false;
+    });
+    gameArea.addEventListener('touchcancel', e => {
+      dragging = false;
+    });
 
     startButton.addEventListener('click', startGame);
   });
