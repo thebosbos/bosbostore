@@ -308,19 +308,7 @@
       }
     });
 
-    // Mobile touch controls - continuous movement while holding left/right buttons
-    let leftPressed = false;
-    let rightPressed = false;
-
-    function touchStartHandler(dir) {
-      if (isGameOver) return;
-      if (dir === 'left') leftPressed = true;
-      else if (dir === 'right') rightPressed = true;
-    }
-    function touchEndHandler(dir) {
-      if (dir === 'left') leftPressed = false;
-      else if (dir === 'right') rightPressed = false;
-    }
+    // Mobile touch controls - continuous movement while holding left/right button
 
     leftBtn.addEventListener('touchstart', e => {
       e.preventDefault();
