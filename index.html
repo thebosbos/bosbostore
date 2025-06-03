@@ -1,276 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>Simple Arcade Game - Drag Control on Mobile</title>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    color: white;
-    user-select: none;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arcade Car Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  /* Navbar */
-  #navbar {
-    width: 100%;
-    max-width: 480px;
-    padding: 1.5rem 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: rgba(0,0,0,0.3);
-    border-radius: 12px;
-    margin-top: 2rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    font-weight: 700;
-    font-size: 1.75rem;
-    letter-spacing: 2px;
-  }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+      user-select: none;
+    }
 
-  /* Game area */
-  #game-area {
-    position: relative;
-    width: 100%;
-    max-width: 480px;
-    height: 600px;
-    background: #1a1a2e;
-    margin: 2rem 0;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow:
-      0 8px 16px rgba(0,0,0,0.5),
-      inset 0 0 50px #764ba2;
-    touch-action: none; /* prevent default scrolling on drag */
-  }
+    #navbar {
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin-top: 2rem;
+      font-size: 1.75rem;
+      font-weight: bold;
+    }
 
-  /* Player block */
-  #player {
-    position: absolute;
-    bottom: 20px;
-    left: 220px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #23d997, #2dce89);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(35, 217, 151, 0.6),
-      0 0 15px #2dce89;
-    transition: left 0.15s ease;
-  }
-
-  /* Falling blocks */
-  .block {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(255, 65, 108, 0.7),
-      0 0 20px #ff4b2b;
-    will-change: transform;
-  }
-
-  /* Score */
-  #score {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: #f8f8f8;
-    text-shadow:
-      0 0 5px #2dce89,
-      0 0 10px #2dce89;
-    max-width: 480px;
-    width: 100%;
-    text-align: center;
-    user-select: none;
-    margin-bottom: 0.5rem;
-  }
-
-  /* Start Button - centered over game area */
-  #start-game {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #5f27cd;
-    border: none;
-    padding: 1rem 3rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    border-radius: 50px;
-    cursor: pointer;
-    color: white;
-    box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
-    transition: background 0.3s ease;
-    z-index: 10;
-    user-select: none;
-  }
-  #start-game:hover {
-    background: #341f97;
-    box-shadow: 0 10px 30px rgba(52, 31, 151, 0.9);
-  }
-  #start-game:active {
-    transform: translate(-50%, -50%) scale(0.95);
-  }
-
-  /* Responsive */
-  @media (max-width: 520px) {
     #game-area {
-      height: 500px;
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 600px;
+      background: #1a1a2e;
+      margin: 2rem 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), inset 0 0 50px #764ba2;
+      touch-action: none;
     }
-    #player, .block {
-      width: 40px;
-      height: 40px;
-    }
-    #player {
-      bottom: 15px;
-    }
-  }
-</style>
 
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 80px;
+      background: url('https://cdn-icons-png.flaticon.com/512/743/743131.png') no-repeat center/contain;
+    }
+
+    .block {
+      position: absolute;
+      width: 50px;
+      height: 80px;
+      background: url('https://cdn-icons-png.flaticon.com/512/743/743007.png') no-repeat center/contain;
+    }
+
+    #score {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f8f8f8;
+      text-shadow: 0 0 5px #2dce89, 0 0 10px #2dce89;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #start-game {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #5f27cd;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 50px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    #start-game:hover {
+      background: #341f97;
+    }
+
+    @media (max-width: 520px) {
+      #game-area {
+        height: 500px;
+      }
+      #player, .block {
+        width: 40px;
+        height: 64px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<nav id="navbar">Simple Arcade</nav>
+  <nav id="navbar">Simple Car Game</nav>
 
-<div id="game-area">
-  <div id="player"></div>
-  <button id="start-game">Start Game</button>
-</div>
+  <div id="game-area">
+    <div id="player"></div>
+    <button id="start-game">Start Game</button>
+  </div>
 
-<div id="score">Score: 0</div>
+  <div id="score">Score: 0</div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const gameArea = document.getElementById('game-area');
-    const player = document.getElementById('player');
-    const startButton = document.getElementById('start-game');
-    const scoreDisplay = document.getElementById('score');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const gameArea = document.getElementById('game-area');
+      const player = document.getElementById('player');
+      const startButton = document.getElementById('start-game');
+      const scoreDisplay = document.getElementById('score');
 
-    let gameInterval;
-    let blocks = [];
-    let score = 0;
-    let isGameOver = false;
+      let gameInterval;
+      let blocks = [];
+      let score = 0;
+      let isGameOver = false;
 
-    let gameWidth, gameHeight, playerWidth, playerHeight;
+      let playerX = 0;
+      let gameWidth, gameHeight, playerWidth, playerHeight;
 
-    function updateSizes() {
-      gameWidth = gameArea.clientWidth;
-      gameHeight = gameArea.clientHeight;
-      playerWidth = player.clientWidth;
-      playerHeight = player.clientHeight;
-    }
-    updateSizes();
-    window.addEventListener('resize', updateSizes);
-
-    let playerX = 220;
-    const playerSpeed = 25;
-
-    function movePlayer(dir) {
-      if (dir === 'left') {
-        playerX = Math.max(0, playerX - playerSpeed);
-      } else if (dir === 'right') {
-        playerX = Math.min(gameWidth - playerWidth, playerX + playerSpeed);
+      function updateSizes() {
+        gameWidth = gameArea.clientWidth;
+        gameHeight = gameArea.clientHeight;
+        playerWidth = player.clientWidth;
+        playerHeight = player.clientHeight;
+        playerX = (gameWidth - playerWidth) / 2;
+        player.style.left = playerX + 'px';
       }
-      player.style.left = playerX + 'px';
-    }
 
-    function setPlayerX(x) {
-      playerX = Math.min(Math.max(0, x), gameWidth - playerWidth);
-      player.style.left = playerX + 'px';
-    }
+      updateSizes();
+      window.addEventListener('resize', updateSizes);
 
-    function createBlock() {
-      const block = document.createElement('div');
-      block.classList.add('block');
-      block.style.top = '-50px';
-      const blockX = Math.floor(Math.random() * (gameWidth - 50));
-      block.style.left = blockX + 'px';
-      gameArea.appendChild(block);
-      blocks.push({ el: block, x: blockX, y: -50 });
-    }
+      function setPlayerX(x) {
+        playerX = Math.max(0, Math.min(gameWidth - playerWidth, x));
+        player.style.left = playerX + 'px';
+      }
 
-    function updateBlocks() {
-      for (let i = blocks.length - 1; i >= 0; i--) {
-        const b = blocks[i];
-        b.y += 6;
-        if (b.y > gameHeight) {
-          gameArea.removeChild(b.el);
-          blocks.splice(i, 1);
-          continue;
-        }
-        b.el.style.top = b.y + 'px';
+      function createBlock() {
+        const block = document.createElement('div');
+        block.classList.add('block');
+        block.style.top = '-80px';
+        const x = Math.floor(Math.random() * (gameWidth - playerWidth));
+        block.style.left = x + 'px';
+        gameArea.appendChild(block);
+        blocks.push({ el: block, x: x, y: -80 });
+      }
 
-        if (
-          b.y + 50 > gameHeight - playerHeight - 20 &&
-          b.x < playerX + playerWidth &&
-          b.x + 50 > playerX
-        ) {
-          endGame();
-          return;
+      function updateBlocks() {
+        for (let i = blocks.length - 1; i >= 0; i--) {
+          const b = blocks[i];
+          b.y += 6;
+          if (b.y > gameHeight) {
+            gameArea.removeChild(b.el);
+            blocks.splice(i, 1);
+            continue;
+          }
+          b.el.style.top = b.y + 'px';
+
+          if (
+            b.y + playerHeight > gameHeight - playerHeight - 20 &&
+            b.x < playerX + playerWidth &&
+            b.x + playerWidth > playerX
+          ) {
+            endGame();
+            return;
+          }
         }
       }
-    }
 
-    function gameLoop() {
-      if (isGameOver) return;
-      updateBlocks();
-
-      score++;
-      scoreDisplay.textContent = 'Score: ' + score;
-
-      if (Math.random() < 0.04) {
-        createBlock();
+      function gameLoop() {
+        if (isGameOver) return;
+        updateBlocks();
+        score++;
+        scoreDisplay.textContent = 'Score: ' + score;
+        if (Math.random() < 0.04) createBlock();
       }
-    }
 
-    function startGame() {
-      isGameOver = false;
-      score = 0;
-      scoreDisplay.textContent = 'Score: 0';
+      function startGame() {
+        isGameOver = false;
+        score = 0;
+        scoreDisplay.textContent = 'Score: 0';
 
-      blocks.forEach(b => gameArea.removeChild(b.el));
-      blocks = [];
+        blocks.forEach(b => gameArea.removeChild(b.el));
+        blocks = [];
 
-      playerX = (gameWidth - playerWidth) / 2;
-      player.style.left = playerX + 'px';
+        playerX = (gameWidth - playerWidth) / 2;
+        player.style.left = playerX + 'px';
 
-      if (gameInterval) clearInterval(gameInterval);
-      gameInterval = setInterval(gameLoop, 1000 / 60);
+        if (gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, 1000 / 60);
 
-      startButton.style.display = 'none';
-    }
-
-    function endGame() {
-      isGameOver = true;
-      clearInterval(gameInterval);
-      startButton.textContent = `Game Over! Score: ${score}\nClick to Restart`;
-      startButton.style.display = 'block';
-    }
-
-    document.addEventListener('keydown', e => {
-      if (isGameOver) return;
-      if (e.key === 'ArrowLeft' || e.key === 'a') {
-        movePlayer('left');
-      } else if (e.key === 'ArrowRight' || e.key === 'd') {
-        movePlayer('right');
+        startButton.style.display = 'none';
       }
+
+      function endGame() {
+        isGameOver = true;
+        clearInterval(gameInterval);
+        startButton.textContent = `Game Over! Score: ${score}\nClick to Restart`;
+        startButton.style.display = 'block';
+      }
+
+      // Touch drag movement
+      let dragging = false;
+
+      gameArea.addEventListener('touchstart', e => {
+        if (isGameOver || startButton.style.display !== 'none') return;
+        dragging = true;
+        const rect = gameArea.getBoundingClientRect();
+        const fingerX = e.touches[0].clientX - rect.left;
+        setPlayerX(fingerX - playerWidth / 2);
+      });
+
+      gameArea.addEventListener('touchmove', e => {
+        if (!dragging || isGameOver) return;
+        const rect = gameArea.getBoundingClientRect();
+        const fingerX = e.touches[0].clientX - rect.left;
+        setPlayerX(fingerX - playerWidth / 2);
+      });
+
+      gameArea.addEventListener('touchend', () => dragging = false);
+      gameArea.addEventListener('touchcancel', () => dragging = false);
+
+      // Start button
+      startButton.addEventListener('click', startGame);
+
+      // Keyboard controls
+      document.addEventListener('keydown', e => {
+        if (isGameOver) return;
+        if (e.key === 'ArrowLeft' || e.key === 'a') setPlayerX(playerX - 20);
+        if (e.key === 'ArrowRight' || e.key === 'd') setPlayerX(playerX + 20);
+      });
     });
+  </script>
 
-    // Drag to move player on mobile
-    let dragging = false;
-
-    gameArea.addEventListener('touchstart', e => {
-      if (isGameOver) return;
-      //
+</body>
+</html>
