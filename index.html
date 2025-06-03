@@ -50,21 +50,32 @@
     }
 
     #player {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 50px;
-      height: 80px;
-      background: url('https://cdn-icons-png.flaticon.com/512/743/743131.png') no-repeat center/contain;
-    }
+    position: absolute;
+    bottom: 20px;
+    left: 220px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #23d997, #2dce89);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(35, 217, 151, 0.6),
+      0 0 15px #2dce89;
+    transition: left 0.15s ease;
+  }
+
 
     .block {
-      position: absolute;
-      width: 50px;
-      height: 80px;
-      background: url('https://cdn-icons-png.flaticon.com/512/743/743007.png') no-repeat center/contain;
-    }
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(255, 65, 108, 0.7),
+      0 0 20px #ff4b2b;
+    will-change: transform;
+  }
+
 
     #score {
       font-size: 1.4rem;
