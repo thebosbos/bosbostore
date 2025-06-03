@@ -499,6 +499,9 @@
       return;
     }
 
+    // Disable inputs so no more customization after game starts
+    document.getElementById('numPlayers').disabled = true;
+    document.getElementById('numWhites').disabled = true;
     // Pick a word for civilians
     const word = wordList[Math.floor(Math.random() * wordList.length)];
 
@@ -618,6 +621,9 @@
     mwGuessDiv.style.display = 'none';
     mwGuessDiv.innerHTML = '';
     mwStartBtn.style.display = 'inline-block';
+    // Enable inputs so they can customize again on new game
+    document.getElementById('numPlayers').disabled = false;
+    document.getElementById('numWhites').disabled = false;
   }
 
   function showModal(htmlContent) {
