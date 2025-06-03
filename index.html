@@ -3,19 +3,149 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mister White Game</title>
+  <title>Arcade Car & Mister White Game</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 1rem;
       min-height: 100vh;
+      color: white;
       user-select: none;
+      padding: 1rem;
     }
+
+    #menu {
+      margin-bottom: 1.5rem;
+    }
+
+    #menu button {
+      margin: 0 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+      border-radius: 30px;
+      border: none;
+      background: #5f27cd;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(95, 39, 205, 0.7);
+      transition: background 0.3s ease;
+    }
+
+    #menu button:hover {
+      background: #341f97;
+    }
+
+    /* Car Game Styles */
+    #car-game-container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    #navbar {
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin-top: 2rem;
+      font-size: 1.75rem;
+      font-weight: bold;
+    }
+
+    #game-area {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 600px;
+      background: #1a1a2e;
+      margin: 2rem 0;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), inset 0 0 50px #764ba2;
+      touch-action: none;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 220px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #23d997, #2dce89);
+      border-radius: 12px;
+      box-shadow:
+        0 4px 10px rgba(35, 217, 151, 0.6),
+        0 0 15px #2dce89;
+      transition: left 0.15s ease;
+    }
+
+    .block {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      border-radius: 12px;
+      box-shadow:
+        0 4px 10px rgba(255, 65, 108, 0.7),
+        0 0 20px #ff4b2b;
+      will-change: transform;
+    }
+
+    #score {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f8f8f8;
+      text-shadow: 0 0 5px #2dce89, 0 0 10px #2dce89;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #start-game {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #5f27cd;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 50px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    #start-game:hover {
+      background: #341f97;
+    }
+
+    @media (max-width: 520px) {
+      #game-area {
+        height: 500px;
+      }
+      #player, .block {
+        width: 40px;
+        height: 64px;
+      }
+    }
+
+    /* Mister White Styles */
     #mister-white-container {
       width: 100%;
       max-width: 480px;
@@ -23,23 +153,39 @@
       border-radius: 20px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), inset 0 0 50px #764ba2;
       padding: 1.5rem 2rem;
-      margin-top: 2rem;
+      margin-top: 1rem;
       text-align: center;
+      user-select: none;
     }
-    label {
-      display: inline-block;
-      margin: 0 1rem 1rem 0;
-      font-weight: bold;
+
+    #mister-white-container h2 {
+      margin-bottom: 1rem;
     }
-    input[type=number] {
-      width: 60px;
-      padding: 0.25rem 0.5rem;
+
+    #mister-white-settings {
+      margin-bottom: 1rem;
+    }
+
+    #mister-white-settings label {
+      font-size: 1.1rem;
+    }
+
+    #mister-white-settings input {
+      margin-left: 0.3rem;
       border-radius: 6px;
       border: none;
-      text-align: center;
+      padding: 0.3rem 0.5rem;
       font-size: 1rem;
+      text-align: center;
     }
-    button {
+
+    #mw-info {
+      margin-top: 1rem;
+      font-size: 1.3rem;
+    }
+
+    #mw-player button,
+    #mw-guess button {
       background: #5f27cd;
       border: none;
       padding: 0.6rem 1.5rem;
@@ -48,65 +194,72 @@
       border-radius: 30px;
       color: white;
       cursor: pointer;
+      margin-top: 1rem;
       box-shadow: 0 6px 16px rgba(95, 39, 205, 0.7);
       transition: background 0.3s ease;
-      margin-top: 1rem;
     }
-    button:hover {
+
+    #mw-player button:hover,
+    #mw-guess button:hover {
       background: #341f97;
     }
-    #mw-info {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-      min-height: 3em;
-    }
-    #mw-player, #mw-guess, #mw-word-guess {
-      margin-top: 1rem;
-    }
+
     #mw-guess button {
-      margin: 0.2rem 0.3rem;
-      min-width: 80px;
+      margin: 0.5rem;
     }
-    /* Modal styles */
-    #modal-bg {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      visibility: hidden;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    #modal-bg.show {
-      visibility: visible;
-      opacity: 1;
-    }
-    #modal {
-      background: #2c2c54;
-      padding: 2rem 2.5rem;
-      border-radius: 20px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 0 20px #764ba2;
-    }
-    #modal input[type=text] {
-      width: 100%;
-      padding: 0.5rem;
-      border-radius: 12px;
-      border: none;
-      font-size: 1.1rem;
-      margin-top: 1rem;
-      box-sizing: border-box;
-    }
-    #modal button {
-      margin-top: 1.5rem;
-      width: 100%;
-    }
-     #start-mister-white{
+
+     #modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+
+  #modal {
+    background: #222244;
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    max-width: 320px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 20px #764ba2;
+  }
+
+  #modal input[type="text"] {
+    width: 90%;
+    padding: 0.6rem;
+    margin: 1rem 0 1.5rem 0;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+  }
+
+  #modal button {
+    background: #5f27cd;
+    border: none;
+    padding: 0.8rem 2rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 30px;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(95, 39, 205, 0.7);
+    transition: background 0.3s ease;
+  }
+
+  #modal button:hover {
+    background: #341f97;
+  }
+
+  #start-mister-white{
     background: #5f27cd;
     border: none;
     padding: 0.8rem 2rem;
@@ -122,227 +275,322 @@
 </head>
 <body>
 
-  <div id="mister-white-container">
-    <h2>Mister White</h2>
-    <div id="mister-white-settings">
-      <label>
-        Number of Players:
-        <input type="number" id="numPlayers" min="3" max="10" value="4" />
-      </label>
-      <label>
-        Number of Mr. Whites:
-        <input type="number" id="numWhites" min="1" max="3" value="1" />
-      </label>
-    </div>
-    <button id="start-mister-white">Start Game</button>
+  <div id="menu">
+  <button onclick="showGame('car')">Play Car Game</button>
+  <button onclick="showGame('misterWhite')">Play Mister White</button>
+</div>
 
-    <div id="mw-info"></div>
-    <div id="mw-player"></div>
-    <div id="mw-guess" style="display:none;"></div>
-    <div id="mw-word-guess" style="display:none;"></div>
+<!-- Car Game Container -->
+<div id="car-game-container">
+  <nav id="navbar">Simple Car Game</nav>
+  <div id="game-area">
+    <div id="player"></div>
+    <button id="start-game">Start Game</button>
   </div>
+  <div id="score">Score: 0</div>
+</div>
 
-  <!-- Modal for input & word reveal -->
-  <div id="modal-bg">
-    <div id="modal">
-      <div id="modal-content"></div>
-      <input type="text" id="modal-input" style="display:none;" />
-      <button id="modal-button">OK</button>
-    </div>
+<!-- Mister White Game Container -->
+<div id="mister-white-container" style="display: none;">
+  <h2>Mister White</h2>
+  <div id="mister-white-settings">
+    <label>
+      Number of Players:
+      <input type="number" id="numPlayers" min="3" max="10" value="4" />
+    </label>
+    <label style="margin-left: 1rem;">
+      Number of Mr. Whites:
+      <input type="number" id="numWhites" min="1" max="3" value="1" />
+    </label>
   </div>
+  <button id="start-mister-white">Start Game</button>
+  <div id="mw-info" style="margin-top:1rem;"></div>
+  <div id="mw-player"></div>
+  <div id="mw-guess" style="display: none; margin-top:1rem;"></div>
+  <div id="mw-word-guess" style="display:none; margin-top:1rem;"></div>
+</div>
+  
+<!-- Modal Popup -->
+<div id="modal-overlay">
+  <div id="modal">
+    <!-- Dynamic content will be injected here -->
+  </div>
+</div>
 
-<script>
+  <script>
+    // =========== Game Switcher ===========
+    function showGame(gameName) {
+      document.getElementById('car-game-container').style.display = gameName === 'car' ? 'block' : 'none';
+      document.getElementById('mister-white-container').style.display = gameName === 'misterWhite' ? 'block' : 'none';
+    }
+    // Show car game by default
+    showGame('car');
+
+    // =========== Car Game Code ===========
+    document.addEventListener('DOMContentLoaded', () => {
+      const gameArea = document.getElementById('game-area');
+      const player = document.getElementById('player');
+      const startButton = document.getElementById('start-game');
+      const scoreDisplay = document.getElementById('score');
+
+      let gameInterval;
+      let blocks = [];
+      let score = 0;
+      let isGameOver = false;
+
+      let playerX = 0;
+      let gameWidth, gameHeight, playerWidth, playerHeight;
+
+      function updateSizes() {
+        gameWidth = gameArea.clientWidth;
+        gameHeight = gameArea.clientHeight;
+        playerWidth = player.clientWidth;
+        playerHeight = player.clientHeight;
+        playerX = (gameWidth - playerWidth) / 2;
+        player.style.left = playerX + 'px';
+      }
+
+      updateSizes();
+      window.addEventListener('resize', updateSizes);
+
+      function setPlayerX(x) {
+        playerX = Math.max(0, Math.min(gameWidth - playerWidth, x));
+        player.style.left = playerX + 'px';
+      }
+
+      function createBlock() {
+        const block = document.createElement('div');
+        block.classList.add('block');
+        block.style.top = '-80px';
+        const x = Math.floor(Math.random() * (gameWidth - playerWidth));
+        block.style.left = x + 'px';
+        gameArea.appendChild(block);
+        blocks.push({ el: block, x: x, y: -80 });
+      }
+
+      function updateBlocks() {
+        for (let i = blocks.length - 1; i >= 0; i--) {
+          const b = blocks[i];
+          b.y += 6;
+          if (b.y > gameHeight) {
+            gameArea.removeChild(b.el);
+            blocks.splice(i, 1);
+            continue;
+          }
+          b.el.style.top = b.y + 'px';
+
+          if (
+            b.y + playerHeight > gameHeight - playerHeight - 20 &&
+            b.x < playerX + playerWidth &&
+            b.x + playerWidth > playerX
+          ) {
+            endGame();
+            return;
+          }
+        }
+      }
+
+      function gameLoop() {
+        if (isGameOver) return;
+        updateBlocks();
+        score++;
+        scoreDisplay.textContent = 'Score: ' + score;
+        if (Math.random() < 0.04) createBlock();
+      }
+
+      function startGame() {
+        isGameOver = false;
+        score = 0;
+        scoreDisplay.textContent = 'Score: 0';
+
+        blocks.forEach(b => gameArea.removeChild(b.el));
+        blocks = [];
+
+        playerX = (gameWidth - playerWidth) / 2;
+        player.style.left = playerX + 'px';
+
+        if (gameInterval) clearInterval(gameInterval);
+        gameInterval = setInterval(gameLoop, 1000 / 60);
+
+        startButton.style.display = 'none';
+      }
+
+      function endGame() {
+        isGameOver = true;
+        clearInterval(gameInterval);
+        startButton.textContent = `Game Over! Score: ${score}\nClick to Restart`;
+        startButton.style.display = 'block';
+      }
+
+      // Touch drag movement
+      let dragging = false;
+
+      gameArea.addEventListener('touchstart', e => {
+        if (isGameOver || startButton.style.display !== 'none') return;
+        dragging = true;
+        const rect = gameArea.getBoundingClientRect();
+        const fingerX = e.touches[0].clientX - rect.left;
+        setPlayerX(fingerX - playerWidth / 2);
+      });
+
+      gameArea.addEventListener('touchmove', e => {
+        if (!dragging) return;
+        e.preventDefault();
+        const rect = gameArea.getBoundingClientRect();
+        const fingerX = e.touches[0].clientX - rect.left;
+        setPlayerX(fingerX - playerWidth / 2);
+      }, { passive: false });
+
+      gameArea.addEventListener('touchend', e => {
+        dragging = false;
+      });
+
+      // Keyboard controls (for desktop)
+      window.addEventListener('keydown', e => {
+        if (isGameOver || startButton.style.display !== 'none') return;
+        if (e.key === 'ArrowLeft') {
+          setPlayerX(playerX - 20);
+        } else if (e.key === 'ArrowRight') {
+          setPlayerX(playerX + 20);
+        }
+      });
+
+      startButton.addEventListener('click', startGame);
+    });
+
+    // Mister White Game with Names and Popup
   const wordList = [
-    'Apple', 'Tiger', 'River', 'Guitar', 'Rocket',
-    'Moon', 'Ocean', 'Pencil', 'Pizza', 'Castle',
-    'Forest', 'Camera', 'Phone', 'Clock', 'Cloud',
-    'Shoe', 'Star', 'Mountain', 'Laptop', 'Chair',
-    'Car', 'Book', 'Tree', 'Coffee', 'Bottle',
-    'Window', 'Ball', 'Cat', 'Dog', 'Bread',
-    'Door', 'Fish', 'House', 'Ice', 'Key',
-    'Lamp', 'Map', 'Nose', 'Orange', 'Pen',
-    'Queen', 'Road', 'Sun', 'Table', 'Umbrella',
-    'Van', 'Water', 'Xylophone', 'Yacht', 'Zoo',
-    'Garden', 'Hat', 'Island', 'Jacket', 'Kite',
-    'Leaf', 'Milk', 'Nest', 'Ocean', 'Pillow',
-    'Quilt', 'Ring', 'Snow', 'Tree', 'Vase'
+    'apple', 'banana', 'cat', 'dog', 'elephant', 'forest', 'garden', 'house',
+    'island', 'jungle', 'kite', 'lemon', 'mountain', 'night', 'ocean',
+    'piano', 'queen', 'river', 'sun', 'tree', 'umbrella', 'violet', 'water',
+    'xylophone', 'yellow', 'zebra'
   ];
 
-  const modalBg = document.getElementById('modal-bg');
-  const modalContent = document.getElementById('modal-content');
-  const modalInput = document.getElementById('modal-input');
-  const modalButton = document.getElementById('modal-button');
-
   let mwPlayers = [];
-  let totalPlayers = 4;
-  let numWhites = 1;
   let currentPlayerIndex = 0;
   let gameStarted = false;
 
-  const mwStartBtn = document.getElementById('start-mister-white');
   const mwInfo = document.getElementById('mw-info');
   const mwPlayerDiv = document.getElementById('mw-player');
   const mwGuessDiv = document.getElementById('mw-guess');
-  const mwWordGuessDiv = document.getElementById('mw-word-guess');
+  const mwStartBtn = document.getElementById('start-mister-white');
+
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modal = document.getElementById('modal');
 
   function shuffleArray(arr) {
-    for (let i = arr.length -1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i+1));
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
   }
 
-  // Show modal helper, with optional input (if inputCallback provided)
-  function showModal(text, inputCallback) {
-    modalContent.innerHTML = text;
-    if (inputCallback) {
-      modalInput.style.display = 'block';
-      modalInput.value = '';
-      modalInput.focus();
-      modalButton.disabled = true;
-      modalInput.oninput = () => {
-        modalButton.disabled = modalInput.value.trim() === '';
-      };
-      modalButton.onclick = () => {
-        const val = modalInput.value.trim();
-        if (val !== '') {
-          inputCallback(val);
-          hideModal();
-        }
-      };
-    } else {
-      modalInput.style.display = 'none';
-      modalButton.disabled = false;
-      modalButton.onclick = () => {
-        hideModal();
-      };
-    }
-    modalBg.classList.add('show');
-  }
-  function hideModal() {
-    modalBg.classList.remove('show');
-  }
-
   function startMisterWhiteGame() {
-    // Reset everything
-    mwPlayers = [];
-    mwInfo.innerHTML = '';
-    mwPlayerDiv.innerHTML = '';
-    mwGuessDiv.style.display = 'none';
-    mwGuessDiv.innerHTML = '';
-    mwWordGuessDiv.style.display = 'none';
-    mwWordGuessDiv.innerHTML = '';
+    const totalPlayers = parseInt(document.getElementById('numPlayers').value);
+    let numWhites = parseInt(document.getElementById('numWhites').value);
 
-    totalPlayers = parseInt(document.getElementById('numPlayers').value);
-    numWhites = parseInt(document.getElementById('numWhites').value);
-
+    if (isNaN(totalPlayers) || totalPlayers < 3) {
+      alert('There must be at least 3 players.');
+      return;
+    }
+    if (isNaN(numWhites) || numWhites < 1) numWhites = 1;
     if (numWhites >= totalPlayers) {
-      alert("Number of Mr. Whites must be less than total players.");
-      return;
-    }
-    if (totalPlayers < 3) {
-      alert("Minimum 3 players required.");
+      alert('Number of Mr. Whites must be less than total players.');
       return;
     }
 
-    // Create roles array
-    let roles = Array(totalPlayers - numWhites).fill('civilian')
-                  .concat(Array(numWhites).fill('white'));
-    shuffleArray(roles);
+    // Pick a word for civilians
+    const word = wordList[Math.floor(Math.random() * wordList.length)];
 
-    // Pick 1 word for civilians (random from list)
-    const secretWord = wordList[Math.floor(Math.random() * wordList.length)];
-
-    // Assign players with role, name placeholder and word (Mr Whites get no word)
-    for(let i=0; i < totalPlayers; i++) {
-      mwPlayers.push({
-        id: i+1,
-        name: '',
-        role: roles[i],
-        word: roles[i] === 'civilian' ? secretWord : ''
-      });
-    }
+    // Assign roles
+    const roles = Array(totalPlayers - numWhites).fill('civilian').concat(Array(numWhites).fill('white'));
+    mwPlayers = shuffleArray(roles).map((role, idx) => ({
+      id: idx + 1,
+      role,
+      word: role === 'civilian' ? word : null,
+      name: null  // custom name to be set
+    }));
 
     currentPlayerIndex = 0;
     gameStarted = true;
+    mwInfo.innerHTML = '';
+    mwGuessDiv.style.display = 'none';
+    mwPlayerDiv.innerHTML = '';
+    mwStartBtn.style.display = 'none';
+
+    // Start by asking for the player's name and showing their role & word
     askPlayerName();
   }
 
-  // Ask for player name one by one
   function askPlayerName() {
-    if (currentPlayerIndex >= totalPlayers) {
-      // All names asked, now start showing roles and words
-      currentPlayerIndex = 0;
-      showPlayerRole();
-      return;
-    }
-    showModal(`Player ${currentPlayerIndex + 1}, enter your name:`, (name) => {
-      mwPlayers[currentPlayerIndex].name = name;
-      currentPlayerIndex++;
-      askPlayerName();
-    });
-  }
-
-  // Show each player their role and word privately
-  function showPlayerRole() {
-    if (currentPlayerIndex >= totalPlayers) {
-      // Finished showing all roles, start guessing phase
-      currentPlayerIndex = 0;
-      mwInfo.innerHTML = `All players know their roles. <br><strong>${mwPlayers[0].name}, it's your turn to view your word and role.</strong>`;
+    if (currentPlayerIndex >= mwPlayers.length) {
+      // All players entered names and saw roles
+      mwInfo.innerHTML = `<strong>All players have seen their roles!</strong>`;
       mwPlayerDiv.innerHTML = '';
-      showNextPlayerView();
-      return;
-    }
-    const player = mwPlayers[currentPlayerIndex];
-    let msg = `<strong>${player.name}</strong>, your role is: <span style="color: #ffd700;">${player.role === 'white' ? 'Mister White' : 'Civilian'}</span><br>`;
-    if (player.role === 'civilian') {
-      msg += `Your secret word is:<br><span style="font-size:1.4rem; font-weight:bold;">${player.word}</span>`;
-    } else {
-      msg += `You are Mister White.<br>Try to blend in and guess the secret word later!`;
-    }
-
-    showModal(msg, null);
-    modalButton.onclick = () => {
-      hideModal();
-      currentPlayerIndex++;
-      showPlayerRole();
-    };
-  }
-
-  // Cycle through players so each can see their role and word (to avoid cheating)
-  function showNextPlayerView() {
-    if (currentPlayerIndex >= totalPlayers) {
-      // All viewed, start voting phase
-      currentPlayerIndex = 0;
-      mwPlayerDiv.innerHTML = `<strong>Voting phase started!</strong><br>Players vote who is Mister White.`;
+      mwGuessDiv.style.display = 'block';
       showGuessButtons();
+      hideModal();
       return;
     }
-    const player = mwPlayers[currentPlayerIndex];
-    let msg = `<strong>${player.name}</strong>, your role is: <span style="color: #ffd700;">${player.role === 'white' ? 'Mister White' : 'Civilian'}</span><br>`;
-    if (player.role === 'civilian') {
-      msg += `Your secret word is:<br><span style="font-size:1.4rem; font-weight:bold;">${player.word}</span>`;
-    } else {
-      msg += `You are Mister White.<br>Try to blend in and guess the secret word later!`;
-    }
-    msg += `<br><br><em>Click OK and pass the device to next player.</em>`;
 
-    showModal(msg, null);
-    modalButton.onclick = () => {
-      hideModal();
+    showModal(`
+      <h3>Player ${currentPlayerIndex + 1}, enter your name:</h3>
+      <input type="text" id="player-name-input" placeholder="Your name" autofocus />
+      <br/>
+      <button id="name-submit-btn" disabled>Submit</button>
+    `);
+
+    const input = document.getElementById('player-name-input');
+    const btn = document.getElementById('name-submit-btn');
+
+    input.addEventListener('input', () => {
+      btn.disabled = input.value.trim() === '';
+    });
+
+    btn.onclick = () => {
+      const name = input.value.trim();
+      if (name === '') return;
+      mwPlayers[currentPlayerIndex].name = name;
+      showRolePopup();
+    };
+
+    // Focus input on modal show
+    setTimeout(() => input.focus(), 100);
+  }
+
+  function showRolePopup() {
+    const player = mwPlayers[currentPlayerIndex];
+    let roleText, wordText;
+
+    if (player.role === 'civilian') {
+      roleText = `<strong>Civilian</strong>`;
+      wordText = `<p>Your secret word is:</p><h2 style="color:#2dce89;">"${player.word}"</h2>`;
+    } else {
+      roleText = `<strong>Mr. White</strong>`;
+      wordText = `<p>You have <em>NO</em> secret word.</p>`;
+    }
+
+    showModal(`
+      <h3>Hello ${player.name}!</h3>
+      <p>Your role is: ${roleText}</p>
+      ${wordText}
+      <button id="next-player-btn">Next Player</button>
+    `);
+
+    document.getElementById('next-player-btn').onclick = () => {
       currentPlayerIndex++;
-      showNextPlayerView();
+      hideModal();
+      // Next player's turn to enter name & see role
+      askPlayerName();
     };
   }
 
-  // Show voting buttons so players vote who they think is Mister White
   function showGuessButtons() {
     mwGuessDiv.innerHTML = `
-      <p>Vote: Who do you think is Mister White?</p>
-      ${mwPlayers.map(p => `<button class="guess-btn" data-id="${p.id}">${p.name}</button>`).join('')}
+      <p>Vote: Who do you think is Mr. White?</p>
+      ${mwPlayers.map(p => `<button class="guess-btn" data-id="${p.id}">${p.name || ("Player " + p.id)}</button>`).join('')}
     `;
-    mwGuessDiv.style.display = 'block';
 
     const buttons = mwGuessDiv.querySelectorAll('.guess-btn');
     buttons.forEach(btn => {
@@ -351,21 +599,40 @@
         startWordGuess(voteId);
       };
     });
+
+    mwGuessDiv.style.display = 'block';
   }
 
-  // Voted player must guess the secret word
+    const buttons = mwGuessDiv.querySelectorAll('.guess-btn');
+    buttons.forEach(btn => {
+      btn.onclick = () => {
+        const guessId = parseInt(btn.getAttribute('data-id'));
+        const guessedPlayer = mwPlayers.find(p => p.id === guessId);
+        if (guessedPlayer.role === 'white') {
+          mwInfo.innerHTML = `<strong>You guessed right! ${guessedPlayer.name} is Mr. White! 🎉</strong>`;
+        } else {
+          mwInfo.innerHTML = `<strong>Wrong! ${guessedPlayer.name} is not Mr. White.</strong>`;
+        }
+        mwGuessDiv.innerHTML = `<button id="restart-mw">Restart Game</button>`;
+        document.getElementById('restart-mw').onclick = () => {
+          resetMisterWhite();
+        };
+      };
+    });
+  }
+// Start word guess phase for the voted player
   function startWordGuess(votedPlayerId) {
     const votedPlayer = mwPlayers.find(p => p.id === votedPlayerId);
 
     mwGuessDiv.style.display = 'none';
 
-    // Show input for the voted player to guess the secret word
+    // Show input for guessed player to guess the word
+    mwWordGuessDiv = document.getElementById('mw-word-guess');
     mwWordGuessDiv.style.display = 'block';
     mwWordGuessDiv.innerHTML = `
-      <p><strong>${votedPlayer.name}</strong>, you have been voted as Mister White.<br>
-      Please guess the secret word:</p>
+      <p>${votedPlayer.name}, you have been voted as Mr. White.<br> Please guess the secret word:</p>
       <input type="text" id="word-guess-input" placeholder="Type the word here" autofocus />
-      <br />
+      <br/>
       <button id="submit-word-guess" disabled>Submit Guess</button>
     `;
 
@@ -378,32 +645,28 @@
 
     btn.onclick = () => {
       const guess = input.value.trim().toLowerCase();
-      // The actual secret word is from any civilian's word
       const actualWord = mwPlayers.find(p => p.role === 'civilian').word.toLowerCase();
 
       mwWordGuessDiv.style.display = 'none';
 
-      // Determine winner based on guess and role
-      let resultMsg = '';
       if (guess === actualWord) {
+        // Guessed word right
         if (votedPlayer.role === 'white') {
-          resultMsg = `<strong>${votedPlayer.name} guessed the word correctly.<br>Mister White wins! 😎</strong>`;
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word correctly.<br> Mr. White wins! 😎</strong>`;
         } else {
-          resultMsg = `<strong>${votedPlayer.name} guessed the word correctly.<br>Civilians win! 🎉</strong>`;
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word correctly.<br> Civilians win! 🎉</strong>`;
         }
       } else {
+        // Guessed word wrong
         if (votedPlayer.role === 'white') {
-          resultMsg = `<strong>${votedPlayer.name} guessed the word incorrectly.<br>Civilians win! 🎉</strong>`;
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word incorrectly.<br> Civilians win! 🎉</strong>`;
         } else {
-          resultMsg = `<strong>${votedPlayer.name} guessed the word incorrectly.<br>Mister White wins! 😎</strong>`;
+          mwInfo.innerHTML = `<strong>${votedPlayer.name} guessed the word incorrectly.<br> Mr. White wins! 😎</strong>`;
         }
       }
 
-      mwInfo.innerHTML = resultMsg;
-
       mwGuessDiv.innerHTML = `<button id="restart-mw">Restart Game</button>`;
       mwGuessDiv.style.display = 'block';
-
       document.getElementById('restart-mw').onclick = () => {
         resetMisterWhite();
       };
@@ -411,25 +674,28 @@
 
     input.focus();
   }
-
   function resetMisterWhite() {
+    gameStarted = false;
+    mwPlayers = [];
+    currentPlayerIndex = 0;
     mwInfo.innerHTML = '';
     mwPlayerDiv.innerHTML = '';
     mwGuessDiv.style.display = 'none';
     mwGuessDiv.innerHTML = '';
-    mwWordGuessDiv.style.display = 'none';
-    mwWordGuessDiv.innerHTML = '';
-    currentPlayerIndex = 0;
-    gameStarted = false;
+    mwStartBtn.style.display = 'inline-block';
   }
 
-  mwStartBtn.addEventListener('click', () => {
-    if (gameStarted) {
-      if (!confirm("Game already started. Restart?")) return;
-    }
-    startMisterWhiteGame();
-  });
-</script>
+  function showModal(htmlContent) {
+    modal.innerHTML = htmlContent;
+    modalOverlay.style.display = 'flex';
+  }
 
+  function hideModal() {
+    modalOverlay.style.display = 'none';
+    modal.innerHTML = '';
+  }
+
+  mwStartBtn.addEventListener('click', startMisterWhiteGame);
+  </script>
 </body>
 </html>
