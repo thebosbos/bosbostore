@@ -1,77 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bosbos - Premium Brand</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out',
-                        'product-hover': 'productHover 0.3s ease-in-out'
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        productHover: {
-                            '0%': { transform: 'scale(1)' },
-                            '50%': { transform: 'scale(1.05)' },
-                            '100%': { transform: 'scale(1)' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #f6f8f9 0%, #e5ebee 100%);
-        }
-    </style>
-</head>
-<body class="font-sans">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-md p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="text-2xl font-bold text-blue-600">Bosbos</div>
-            <div class="space-x-4">
-		<a href="#" class="hover:text-blue-600 transition">Cart</a>
-		<a href="#products" class="hover:text-blue-600 transition">Products</a>
-                <a href="#" class="hover:text-blue-600 transition">Home</a>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <header class="text-center py-16 animate-fade-in">
-        <h1 class="text-5xl font-bold text-gray-800 mb-4">Welcome to Bosbos</h1>
-        <p class="text-xl text-gray-600 mb-8">Elevate Your Style with Premium Designs</p>
-        <a href="#products" class="bg-blue-500 text-white px-6 py-3 rounded-full hover:bg-blue-600 transition-colors">
-            Explore Collection
-        </a>
-    </header>
-
-    <!-- Products Section -->
-    <section id="products" class="container mx-auto px-4 py-12">
-        <h2 class="text-3xl font-bold text-center mb-12">Our Products</h2>
-        <div id="product-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Products will be dynamically inserted here -->
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-6 mt-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Bosbos. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="products.js"></script>
-    <script src="app.js"></script>
-</body>
-</html>
+<section id="game" class="container mx-auto px-4 py-12">
+  <h2 class="text-3xl font-bold text-center mb-8">Dodge the Blocks!</h2>
+  <div id="game-area" class="relative bg-gray-100 mx-auto" style="width: 400px; height: 600px; border: 2px solid #333;"></div>
+  <div class="text-center mt-4">
+    <span class="text-xl font-bold">Score: </span><span id="score" class="text-xl font-bold">0</span>
+  </div>
+  <div class="text-center mt-4">
+    <button id="start-game" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Start Game</button>
+  </div>
+</section>
