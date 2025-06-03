@@ -1,10 +1,215 @@
-<section id="game" class="container mx-auto px-4 py-12">
-  <h2 class="text-3xl font-bold text-center mb-8">Dodge the Blocks!</h2>
-  <div id="game-area" class="relative bg-gray-100 mx-auto" style="width: 400px; height: 600px; border: 2px solid #333;"></div>
-  <div class="text-center mt-4">
-    <span class="text-xl font-bold">Score: </span><span id="score" class="text-xl font-bold">0</span>
-  </div>
-  <div class="text-center mt-4">
-    <button id="start-game" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Start Game</button>
-  </div>
-</section>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simple Arcade Game</title>
+<style>
+  /* Your CSS (simplified) */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  #navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: white;
+    padding: 1rem 2rem;
+    width: 100%;
+  }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .btn {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    margin-top: 1rem;
+    border-radius: 4px;
+  }
+  #game-area {
+    position: relative;
+    width: 400px;
+    height: 600px;
+    background-color: #222;
+    margin-top: 2rem;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 3px solid #555;
+  }
+  #player {
+    position: absolute;
+    bottom: 20px;
+    left: 180px;
+    width: 40px;
+    height: 40px;
+    background-color: #4caf50;
+    border-radius: 5px;
+  }
+  .block {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #e91e63;
+    border-radius: 5px;
+  }
+  #score {
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+  }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="logo">Simple Arcade</div>
+  <button id="start-game" class="btn">Start Game</button>
+</nav>
+
+<div id="game-area">
+  <div id="player"></div>
+</div>
+
+<div id="score">Score: 0</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const gameArea = document.getElementById('game-area');
+    const player = document.getElementById('player');
+    const startButton = document.getElementById('start-game');
+    const scoreDisplay = document.getElementById('score');
+
+    let gameInterval;
+    let blocks = [];
+    let score = 0;
+    let isGameOver = false;
+
+    const gameWidth = gameArea.clientWidth;
+    const gameHeight = gameArea.clientHeight;
+    const playerWidth = player.clientWidth;
+    const playerHeight = player.clientHeight;
+
+    let playerX = 180; // initial left position
+    const playerSpeed = 20; // pixels per arrow press
+
+    // Move player left or right
+    function movePlayer(dir) {
+      if (dir === 'left') {
+        playerX = Math.max(0, playerX - playerSpeed);
+      } else if (dir === 'right') {
+        playerX = Math.min(gameWidth - playerWidth, playerX + playerSpeed);
+      }
+      player.style.left = playerX + 'px';
+    }
+
+    // Create a new falling block at random x position
+    function createBlock() {
+      const block = document.createElement('div');
+      block.classList.add('block');
+      block.style.top = '0px';
+      const blockX = Math.floor(Math.random() * (gameWidth - 40));
+      block.style.left = blockX + 'px';
+      gameArea.appendChild(block);
+      blocks.push({el: block, x: blockX, y: 0});
+    }
+
+    // Update blocks positions and check for collision
+    function updateBlocks() {
+      for (let i = blocks.length - 1; i >= 0; i--) {
+        const b = blocks[i];
+        b.y += 5; // fall speed
+        if (b.y > gameHeight) {
+          // Remove block if it falls out
+          gameArea.removeChild(b.el);
+          blocks.splice(i, 1);
+          continue;
+        }
+        b.el.style.top = b.y + 'px';
+
+        // Check collision with player
+        if (
+          b.y + 40 > gameHeight - playerHeight - 20 && // vertical collision
+          b.x < playerX + playerWidth &&
+          b.x + 40 > playerX
+        ) {
+          endGame();
+          return;
+        }
+      }
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (isGameOver) return;
+      updateBlocks();
+
+      // Increase score
+      score++;
+      scoreDisplay.textContent = 'Score: ' + score;
+
+      // Occasionally create new blocks
+      if (Math.random() < 0.03) { // ~3% chance per frame
+        createBlock();
+      }
+    }
+
+    // Start the game
+    function startGame() {
+      // Reset state
+      isGameOver = false;
+      score = 0;
+      scoreDisplay.textContent = 'Score: 0';
+
+      // Remove any leftover blocks
+      blocks.forEach(b => gameArea.removeChild(b.el));
+      blocks = [];
+
+      // Reset player position
+      playerX = 180;
+      player.style.left = playerX + 'px';
+
+      // Start game loop (60fps)
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(gameLoop, 1000 / 60);
+    }
+
+    // End the game
+    function endGame() {
+      isGameOver = true;
+      clearInterval(gameInterval);
+      alert('Game Over! Your score: ' + score);
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      if (isGameOver) return;
+      if (e.key === 'ArrowLeft') {
+        movePlayer('left');
+      } else if (e.key === 'ArrowRight') {
+        movePlayer('right');
+      }
+    });
+
+    startButton.addEventListener('click', startGame);
+  });
+</script>
+
+</body>
+</html>
