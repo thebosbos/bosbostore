@@ -3,76 +3,132 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Arcade Game</title>
+<title>Simple Arcade Game - Beautiful</title>
 <style>
-  /* Your CSS (simplified) */
+  /* Reset & basics */
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
   body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f4f4f4;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    color: white;
+    user-select: none;
   }
+
+  /* Navbar */
   #navbar {
+    width: 100%;
+    max-width: 480px;
+    padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #333;
-    color: white;
-    padding: 1rem 2rem;
-    width: 100%;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
   .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
   }
-  .btn {
-    background-color: #333;
-    color: white;
-    padding: 0.5rem 1rem;
+  #start-game {
+    background: #5f27cd;
     border: none;
+    padding: 0.6rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 30px;
     cursor: pointer;
-    margin-top: 1rem;
-    border-radius: 4px;
+    color: white;
+    transition: background 0.3s ease;
+    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.5);
   }
+  #start-game:hover {
+    background: #341f97;
+    box-shadow: 0 6px 20px rgba(52, 31, 151, 0.7);
+  }
+  #start-game:active {
+    transform: scale(0.95);
+  }
+
+  /* Game area */
   #game-area {
     position: relative;
-    width: 400px;
+    width: 100%;
+    max-width: 480px;
     height: 600px;
-    background-color: #222;
-    margin-top: 2rem;
+    background: #1a1a2e;
+    margin: 2rem 0;
+    border-radius: 20px;
     overflow: hidden;
-    border-radius: 8px;
-    border: 3px solid #555;
+    box-shadow:
+      0 8px 16px rgba(0,0,0,0.5),
+      inset 0 0 50px #764ba2;
   }
+
+  /* Player block */
   #player {
     position: absolute;
     bottom: 20px;
-    left: 180px;
-    width: 40px;
-    height: 40px;
-    background-color: #4caf50;
-    border-radius: 5px;
+    left: 220px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #23d997, #2dce89);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(35, 217, 151, 0.6),
+      0 0 15px #2dce89;
+    transition: left 0.15s ease;
   }
+
+  /* Falling blocks */
   .block {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    background-color: #e91e63;
-    border-radius: 5px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(255, 65, 108, 0.7),
+      0 0 20px #ff4b2b;
+    will-change: transform;
   }
+
+  /* Score */
   #score {
-    margin-top: 1rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f8f8f8;
+    text-shadow:
+      0 0 5px #2dce89,
+      0 0 10px #2dce89;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    user-select: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    #game-area {
+      height: 500px;
+    }
+    #player, .block {
+      width: 40px;
+      height: 40px;
+    }
+    #player {
+      bottom: 15px;
+    }
   }
 </style>
 </head>
@@ -80,7 +136,7 @@
 
 <nav id="navbar">
   <div class="logo">Simple Arcade</div>
-  <button id="start-game" class="btn">Start Game</button>
+  <button id="start-game">Start Game</button>
 </nav>
 
 <div id="game-area">
@@ -101,15 +157,21 @@
     let score = 0;
     let isGameOver = false;
 
-    const gameWidth = gameArea.clientWidth;
-    const gameHeight = gameArea.clientHeight;
-    const playerWidth = player.clientWidth;
-    const playerHeight = player.clientHeight;
+    let gameWidth, gameHeight, playerWidth, playerHeight;
 
-    let playerX = 180; // initial left position
-    const playerSpeed = 20; // pixels per arrow press
+    // Initialize sizes (also update on resize)
+    function updateSizes() {
+      gameWidth = gameArea.clientWidth;
+      gameHeight = gameArea.clientHeight;
+      playerWidth = player.clientWidth;
+      playerHeight = player.clientHeight;
+    }
+    updateSizes();
+    window.addEventListener('resize', updateSizes);
 
-    // Move player left or right
+    let playerX = 220; // initial left position
+    const playerSpeed = 25; // px per key press
+
     function movePlayer(dir) {
       if (dir === 'left') {
         playerX = Math.max(0, playerX - playerSpeed);
@@ -119,35 +181,32 @@
       player.style.left = playerX + 'px';
     }
 
-    // Create a new falling block at random x position
     function createBlock() {
       const block = document.createElement('div');
       block.classList.add('block');
-      block.style.top = '0px';
-      const blockX = Math.floor(Math.random() * (gameWidth - 40));
+      block.style.top = '-50px';
+      const blockX = Math.floor(Math.random() * (gameWidth - 50));
       block.style.left = blockX + 'px';
       gameArea.appendChild(block);
-      blocks.push({el: block, x: blockX, y: 0});
+      blocks.push({ el: block, x: blockX, y: -50 });
     }
 
-    // Update blocks positions and check for collision
     function updateBlocks() {
       for (let i = blocks.length - 1; i >= 0; i--) {
         const b = blocks[i];
-        b.y += 5; // fall speed
+        b.y += 6; // falling speed
         if (b.y > gameHeight) {
-          // Remove block if it falls out
           gameArea.removeChild(b.el);
           blocks.splice(i, 1);
           continue;
         }
         b.el.style.top = b.y + 'px';
 
-        // Check collision with player
+        // Collision detection
         if (
-          b.y + 40 > gameHeight - playerHeight - 20 && // vertical collision
+          b.y + 50 > gameHeight - playerHeight - 20 &&
           b.x < playerX + playerWidth &&
-          b.x + 40 > playerX
+          b.x + 50 > playerX
         ) {
           endGame();
           return;
@@ -155,54 +214,51 @@
       }
     }
 
-    // Game loop
     function gameLoop() {
       if (isGameOver) return;
       updateBlocks();
 
-      // Increase score
       score++;
       scoreDisplay.textContent = 'Score: ' + score;
 
-      // Occasionally create new blocks
-      if (Math.random() < 0.03) { // ~3% chance per frame
+      if (Math.random() < 0.04) { // increase spawn rate slightly
         createBlock();
       }
     }
 
-    // Start the game
     function startGame() {
-      // Reset state
       isGameOver = false;
       score = 0;
       scoreDisplay.textContent = 'Score: 0';
 
-      // Remove any leftover blocks
       blocks.forEach(b => gameArea.removeChild(b.el));
       blocks = [];
 
-      // Reset player position
-      playerX = 180;
+      playerX = (gameWidth - playerWidth) / 2;
       player.style.left = playerX + 'px';
 
-      // Start game loop (60fps)
       if (gameInterval) clearInterval(gameInterval);
       gameInterval = setInterval(gameLoop, 1000 / 60);
+
+      startButton.disabled = true;
+      startButton.style.opacity = 0.6;
+      startButton.style.cursor = 'not-allowed';
     }
 
-    // End the game
     function endGame() {
       isGameOver = true;
       clearInterval(gameInterval);
-      alert('Game Over! Your score: ' + score);
+      alert(`Game Over! Your score: ${score}`);
+      startButton.disabled = false;
+      startButton.style.opacity = 1;
+      startButton.style.cursor = 'pointer';
     }
 
-    // Keyboard controls
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener('keydown', e => {
       if (isGameOver) return;
-      if (e.key === 'ArrowLeft') {
+      if (e.key === 'ArrowLeft' || e.key === 'a') {
         movePlayer('left');
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' || e.key === 'd') {
         movePlayer('right');
       }
     });
