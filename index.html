@@ -2,290 +2,400 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Car Dodge Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>Simple Arcade Game - Drag Control on Mobile</title>
 <style>
   * {
-    margin: 0; padding: 0; box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #a8dadc, #457b9d);
-    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    color: white;
+    user-select: none;
+  }
+
+  /* Navbar */
+  #navbar {
+    width: 100%;
+    max-width: 480px;
+    padding: 1.5rem 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    margin-top: 2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: 2px;
   }
-  #gameArea {
+
+  /* Game area */
+  #game-area {
     position: relative;
-    width: 300px;
-    height: 500px;
-    background: linear-gradient(to top, #3a3a3a, #222);
-    border: 5px solid #fff;
-    border-radius: 15px;
+    width: 100%;
+    max-width: 480px;
+    height: 600px;
+    background: #1a1a2e;
+    margin: 2rem 0;
+    border-radius: 20px;
     overflow: hidden;
-    touch-action: none;
+    box-shadow:
+      0 8px 16px rgba(0,0,0,0.5),
+      inset 0 0 50px #764ba2;
   }
+
+  /* Player block */
   #player {
     position: absolute;
     bottom: 20px;
-    left: 120px;
-    width: 60px;
-    height: 120px;
-    background-image: url('https://cdn-icons-png.flaticon.com/512/743/743922.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: left 0.1s ease-out;
+    left: 220px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #23d997, #2dce89);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(35, 217, 151, 0.6),
+      0 0 15px #2dce89;
+    transition: left 0.15s ease;
   }
+
+  /* Falling blocks */
   .block {
     position: absolute;
     width: 50px;
-    height: 100px;
-    background-image: url('https://cdn-icons-png.flaticon.com/512/743/743922.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    height: 50px;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    border-radius: 12px;
+    box-shadow:
+      0 4px 10px rgba(255, 65, 108, 0.7),
+      0 0 20px #ff4b2b;
+    will-change: transform;
   }
-  #startBtn {
+
+  /* Score */
+  #score {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #f8f8f8;
+    text-shadow:
+      0 0 5px #2dce89,
+      0 0 10px #2dce89;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    user-select: none;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Start Button - centered over game area */
+  #start-game {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: #1d3557;
-    color: white;
+    background: #5f27cd;
+    border: none;
+    padding: 1rem 3rem;
     font-size: 1.5rem;
-    padding: 15px 40px;
-    border: none;
-    border-radius: 30px;
+    font-weight: 700;
+    border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 6px 10px rgba(0,0,0,0.3);
-    user-select: none;
-    z-index: 10;
-  }
-  #scoreBoard {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #f1faee;
-    font-size: 1.3rem;
-    font-weight: bold;
-    text-shadow: 0 0 5px #000;
-  }
-  #gameOverMsg {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(29, 53, 87, 0.9);
-    color: #f1faee;
-    font-size: 1.4rem;
-    padding: 20px 30px;
-    border-radius: 15px;
-    text-align: center;
-    display: none;
-    z-index: 10;
-    user-select: none;
-  }
-  #gameOverMsg button {
-    margin-top: 15px;
-    background: #e63946;
-    border: none;
-    padding: 10px 25px;
     color: white;
-    font-weight: bold;
-    border-radius: 25px;
+    box-shadow: 0 8px 20px rgba(95, 39, 205, 0.7);
+    transition: background 0.3s ease;
+    z-index: 10;
+    user-select: none;
+  }
+  #start-game:hover {
+    background: #341f97;
+    box-shadow: 0 10px 30px rgba(52, 31, 151, 0.9);
+  }
+  #start-game:active {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+
+  /* Controls for mobile */
+  #mobile-controls {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    user-select: none;
+  }
+  .control-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(95, 39, 205, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(95, 39, 205, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
     cursor: pointer;
+    transition: background 0.3s ease;
+    color: white;
+    user-select: none;
+  }
+  .control-btn:active {
+    background: #341f97;
+    box-shadow: 0 6px 20px rgba(52, 31, 151, 0.9);
+  }
+
+  /* Responsive */
+  @media (max-width: 520px) {
+    #game-area {
+      height: 500px;
+    }
+    #player, .block {
+      width: 40px;
+      height: 40px;
+    }
+    #player {
+      bottom: 15px;
+    }
+    #mobile-controls {
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .control-btn {
+      width: 70px;
+      height: 70px;
+      font-size: 2rem;
+    }
   }
 </style>
+
 </head>
 <body>
 
-<div id="gameArea" tabindex="0">
+<nav id="navbar">Simple Arcade</nav>
+
+<div id="game-area">
+<div id="score">Score: 0</div>
   <div id="player"></div>
-  <button id="startBtn">Start Game</button>
-  <div id="scoreBoard">Score: 0</div>
-  <div id="gameOverMsg">
-    <div id="finalScore"></div>
-    <button id="restartBtn">Restart</button>
-  </div>
+  <button id="start-game">Start Game</button>
 </div>
 
+<div id="mobile-controls">
+  <div id="left-btn" class="control-btn" aria-label="Move Left">&#8592;</div>
+  <div id="right-btn" class="control-btn" aria-label="Move Right">&#8594;</div>
+</div>
+
+
 <script>
-  (() => {
-    const gameArea = document.getElementById('gameArea');
+  document.addEventListener('DOMContentLoaded', () => {
+    const gameArea = document.getElementById('game-area');
     const player = document.getElementById('player');
-    const startBtn = document.getElementById('startBtn');
-    const scoreBoard = document.getElementById('scoreBoard');
-    const gameOverMsg = document.getElementById('gameOverMsg');
-    const finalScore = document.getElementById('finalScore');
-    const restartBtn = document.getElementById('restartBtn');
+    const startButton = document.getElementById('start-game');
+    const scoreDisplay = document.getElementById('score');
 
-    const gameWidth = gameArea.clientWidth;
-    const gameHeight = gameArea.clientHeight;
-    const playerWidth = player.clientWidth;
-    const playerHeight = player.clientHeight;
+    const leftBtn = document.getElementById('left-btn');
+    const rightBtn = document.getElementById('right-btn');
 
+    let gameInterval;
     let blocks = [];
-    let animationId;
-    let isGameRunning = false;
     let score = 0;
-    let playerX = (gameWidth - playerWidth) / 2;
+    let isGameOver = false;
 
-    // Touch movement variables
-    let initialTouchX = null;
+    let gameWidth, gameHeight, playerWidth, playerHeight;
+
+    function updateSizes() {
+      gameWidth = gameArea.clientWidth;
+      gameHeight = gameArea.clientHeight;
+      playerWidth = player.clientWidth;
+      playerHeight = player.clientHeight;
+    }
+    updateSizes();
+    window.addEventListener('resize', updateSizes);
+
+    let playerX = 220;
+    const playerSpeed = 25;
+
+    function movePlayer(dir) {
+      if (dir === 'left') {
+        playerX = Math.max(0, playerX - playerSpeed);
+      } else if (dir === 'right') {
+        playerX = Math.min(gameWidth - playerWidth, playerX + playerSpeed);
+      }
+      player.style.left = playerX + 'px';
+    }
+
+    function setPlayerX(x) {
+      playerX = Math.min(Math.max(0, x), gameWidth - playerWidth);
+      player.style.left = playerX + 'px';
+    }
 
     function createBlock() {
       const block = document.createElement('div');
       block.classList.add('block');
-      block.style.top = '-100px';
+      block.style.top = '-50px';
       const blockX = Math.floor(Math.random() * (gameWidth - 50));
       block.style.left = blockX + 'px';
       gameArea.appendChild(block);
-      blocks.push({ el: block, x: blockX, y: -100 });
+      blocks.push({ el: block, x: blockX, y: -50 });
     }
 
-    function moveBlocks() {
-      blocks.forEach((block, index) => {
-        block.y += 4 + score * 0.05; // increase speed gradually
-        block.el.style.top = block.y + 'px';
-
-        if (block.y > gameHeight) {
-          // Remove block if off screen & create new
-          block.el.remove();
-          blocks.splice(index, 1);
-          createBlock();
-          score++;
-          updateScore();
+    function updateBlocks() {
+      for (let i = blocks.length - 1; i >= 0; i--) {
+        const b = blocks[i];
+        b.y += 6;
+        if (b.y > gameHeight) {
+          gameArea.removeChild(b.el);
+          blocks.splice(i, 1);
+          continue;
         }
+        b.el.style.top = b.y + 'px';
 
-        // Check collision with player
-        if (collision(block)) {
+        if (
+          b.y + 50 > gameHeight - playerHeight - 20 &&
+          b.x < playerX + playerWidth &&
+          b.x + 50 > playerX
+        ) {
           endGame();
+          return;
         }
-      });
-    }
-
-    function collision(block) {
-      const playerRect = player.getBoundingClientRect();
-      const blockRect = block.el.getBoundingClientRect();
-
-      // Adjust rects relative to gameArea to avoid window scrolling issues
-      const gameRect = gameArea.getBoundingClientRect();
-
-      const pLeft = playerRect.left - gameRect.left;
-      const pRight = playerRect.right - gameRect.left;
-      const pTop = playerRect.top - gameRect.top;
-      const pBottom = playerRect.bottom - gameRect.top;
-
-      const bLeft = blockRect.left - gameRect.left;
-      const bRight = blockRect.right - gameRect.left;
-      const bTop = blockRect.top - gameRect.top;
-      const bBottom = blockRect.bottom - gameRect.top;
-
-      return !(pRight < bLeft || pLeft > bRight || pBottom < bTop || pTop > bBottom);
-    }
-
-    function updateScore() {
-      scoreBoard.textContent = 'Score: ' + score;
-    }
-
-    function movePlayer(newX) {
-      // Clamp player inside game area
-      playerX = Math.min(Math.max(newX, 0), gameWidth - playerWidth);
-      player.style.left = playerX + 'px';
+      }
     }
 
     function gameLoop() {
-      moveBlocks();
-      if (isGameRunning) {
-        animationId = requestAnimationFrame(gameLoop);
+      if (isGameOver) return;
+      updateBlocks();
+
+      score++;
+      scoreDisplay.textContent = 'Score: ' + score;
+
+      if (Math.random() < 0.04) {
+        createBlock();
       }
     }
 
     function startGame() {
-      if (isGameRunning) return;
+      isGameOver = false;
       score = 0;
-      updateScore();
-      isGameRunning = true;
-      startBtn.style.display = 'none';
-      gameOverMsg.style.display = 'none';
+      scoreDisplay.textContent = 'Score: 0';
 
-      // Reset player position to center
-      movePlayer((gameWidth - playerWidth) / 2);
-
-      // Clear old blocks if any
-      blocks.forEach(b => b.el.remove());
+      blocks.forEach(b => gameArea.removeChild(b.el));
       blocks = [];
 
-      // Create initial blocks
-      for (let i = 0; i < 4; i++) {
-        createBlock();
-      }
+      playerX = (gameWidth - playerWidth) / 2;
+      player.style.left = playerX + 'px';
 
-      animationId = requestAnimationFrame(gameLoop);
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(gameLoop, 1000 / 60);
+
+      startButton.style.display = 'none';
     }
 
     function endGame() {
-      isGameRunning = false;
-      cancelAnimationFrame(animationId);
-      finalScore.textContent = `Game Over! Your score: ${score}`;
-      gameOverMsg.style.display = 'block';
-      startBtn.style.display = 'block';
-      startBtn.textContent = 'Start Game';
+      isGameOver = true;
+      clearInterval(gameInterval);
+      startButton.textContent = `Game Over! Score: ${score}\nClick to Restart`;
+      startButton.style.display = 'block';
     }
 
-    // Keyboard control (optional)
-    gameArea.addEventListener('keydown', e => {
-      if (!isGameRunning) return;
+    document.addEventListener('keydown', e => {
+      if (isGameOver) return;
       if (e.key === 'ArrowLeft' || e.key === 'a') {
-        movePlayer(playerX - 30);
+        movePlayer('left');
       } else if (e.key === 'ArrowRight' || e.key === 'd') {
-        movePlayer(playerX + 30);
+        movePlayer('right');
       }
     });
 
-    // Touch controls
+    // Mobile touch controls - continuous movement while holding left/right buttons
+    let leftPressed = false;
+    let rightPressed = false;
+
+    function touchStartHandler(dir) {
+      if (isGameOver) return;
+      if (dir === 'left') leftPressed = true;
+      else if (dir === 'right') rightPressed = true;
+    }
+    function touchEndHandler(dir) {
+      if (dir === 'left') leftPressed = false;
+      else if (dir === 'right') rightPressed = false;
+    }
+
+    leftBtn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartHandler('left');
+    });
+    leftBtn.addEventListener('touchend', e => {
+      e.preventDefault();
+      touchEndHandler('left');
+    });
+    leftBtn.addEventListener('touchcancel', e => {
+      e.preventDefault();
+      touchEndHandler('left');
+    });
+
+    rightBtn.addEventListener('touchstart', e => {
+      e.preventDefault();
+      touchStartHandler('right');
+    });
+    rightBtn.addEventListener('touchend', e => {
+      e.preventDefault();
+      touchEndHandler('right');
+    });
+    rightBtn.addEventListener('touchcancel', e => {
+      e.preventDefault();
+      touchEndHandler('right');
+    });
+
+    // Update player position continuously on mobile when buttons pressed
+    function mobileControlLoop() {
+      if (!isGameOver) {
+        if (leftPressed) movePlayer('left');
+        if (rightPressed) movePlayer('right');
+      }
+      requestAnimationFrame(mobileControlLoop);
+    }
+    mobileControlLoop();
+
+    // New: Drag to move player on mobile
+    let dragging = false;
+
     gameArea.addEventListener('touchstart', e => {
-      if (!isGameRunning) return;
-      initialTouchX = e.touches[0].clientX;
+      if (isGameOver) return;
+      // Prevent starting drag if start button visible
+      if (startButton.style.display !== 'none') return;
+      dragging = true;
+      const touch = e.touches[0];
+      // Move player to finger X relative to game area
+      const rect = gameArea.getBoundingClientRect();
+      const fingerX = touch.clientX - rect.left;
+      setPlayerX(fingerX - playerWidth / 2);
     });
 
     gameArea.addEventListener('touchmove', e => {
-      if (!isGameRunning) return;
-      e.preventDefault();
-      const touchX = e.touches[0].clientX;
-      const deltaX = touchX - initialTouchX;
-      initialTouchX = touchX;
-
-      movePlayer(playerX + deltaX);
-    }, { passive: false });
-
-    // Mouse control for desktop drag (optional)
-    let isDragging = false;
-    gameArea.addEventListener('mousedown', e => {
-      if (!isGameRunning) return;
-      isDragging = true;
-    });
-    window.addEventListener('mouseup', () => {
-      isDragging = false;
-    });
-    gameArea.addEventListener('mousemove', e => {
-      if (!isGameRunning || !isDragging) return;
+      if (!dragging || isGameOver) return;
+      const touch = e.touches[0];
       const rect = gameArea.getBoundingClientRect();
-      let newX = e.clientX - rect.left - playerWidth / 2;
-      movePlayer(newX);
+      const fingerX = touch.clientX - rect.left;
+      setPlayerX(fingerX - playerWidth / 2);
     });
 
-    // Start button handlers
-    startBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', () => {
-      gameOverMsg.style.display = 'none';
-      startGame();
+    gameArea.addEventListener('touchend', e => {
+      dragging = false;
     });
-  })();
+    gameArea.addEventListener('touchcancel', e => {
+      dragging = false;
+    });
+
+    startButton.addEventListener('click', startGame);
+  });
 </script>
 
 </body>
