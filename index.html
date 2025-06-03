@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Arcade Car Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arcade Car & Mister White Game</title>
   <style>
     * {
       margin: 0;
@@ -20,6 +20,34 @@
       min-height: 100vh;
       color: white;
       user-select: none;
+      padding: 1rem;
+    }
+
+    #menu {
+      margin-bottom: 1.5rem;
+    }
+
+    #menu button {
+      margin: 0 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1.2rem;
+      border-radius: 30px;
+      border: none;
+      background: #5f27cd;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(95, 39, 205, 0.7);
+      transition: background 0.3s ease;
+    }
+
+    #menu button:hover {
+      background: #341f97;
+    }
+
+    /* Car Game Styles */
+    #car-game-container {
+      width: 100%;
+      max-width: 480px;
     }
 
     #navbar {
@@ -50,32 +78,30 @@
     }
 
     #player {
-    position: absolute;
-    bottom: 20px;
-    left: 220px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #23d997, #2dce89);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(35, 217, 151, 0.6),
-      0 0 15px #2dce89;
-    transition: left 0.15s ease;
-  }
-
+      position: absolute;
+      bottom: 20px;
+      left: 220px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #23d997, #2dce89);
+      border-radius: 12px;
+      box-shadow:
+        0 4px 10px rgba(35, 217, 151, 0.6),
+        0 0 15px #2dce89;
+      transition: left 0.15s ease;
+    }
 
     .block {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #ff416c, #ff4b2b);
-    border-radius: 12px;
-    box-shadow:
-      0 4px 10px rgba(255, 65, 108, 0.7),
-      0 0 20px #ff4b2b;
-    will-change: transform;
-  }
-
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #ff416c, #ff4b2b);
+      border-radius: 12px;
+      box-shadow:
+        0 4px 10px rgba(255, 65, 108, 0.7),
+        0 0 20px #ff4b2b;
+      will-change: transform;
+    }
 
     #score {
       font-size: 1.4rem;
@@ -118,20 +144,91 @@
         height: 64px;
       }
     }
+
+    /* Mister White Styles */
+    #mister-white-container {
+      width: 100%;
+      max-width: 480px;
+      background: #1a1a2e;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), inset 0 0 50px #764ba2;
+      padding: 1.5rem 2rem;
+      margin-top: 1rem;
+      text-align: center;
+      user-select: none;
+    }
+
+    #mister-white-container h2 {
+      margin-bottom: 1rem;
+    }
+
+    #mw-info {
+      margin-top: 1rem;
+      font-size: 1.3rem;
+    }
+
+    #mw-player button,
+    #mw-guess button {
+      background: #5f27cd;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 30px;
+      color: white;
+      cursor: pointer;
+      margin-top: 1rem;
+      box-shadow: 0 6px 16px rgba(95, 39, 205, 0.7);
+      transition: background 0.3s ease;
+    }
+
+    #mw-player button:hover,
+    #mw-guess button:hover {
+      background: #341f97;
+    }
+
+    #mw-guess button {
+      margin: 0.5rem;
+    }
+
   </style>
 </head>
 <body>
 
-  <nav id="navbar">Simple Car Game</nav>
-
-  <div id="game-area">
-    <div id="player"></div>
-    <button id="start-game">Start Game</button>
+  <div id="menu">
+    <button onclick="showGame('car')">Play Car Game</button>
+    <button onclick="showGame('misterWhite')">Play Mister White</button>
   </div>
 
-  <div id="score">Score: 0</div>
+  <!-- Car Game Container -->
+  <div id="car-game-container">
+    <nav id="navbar">Simple Car Game</nav>
+    <div id="game-area">
+      <div id="player"></div>
+      <button id="start-game">Start Game</button>
+    </div>
+    <div id="score">Score: 0</div>
+  </div>
+
+  <!-- Mister White Game Container -->
+  <div id="mister-white-container" style="display: none;">
+    <h2>Mister White</h2>
+    <button id="start-mister-white">Start Game</button>
+    <div id="mw-info"></div>
+    <div id="mw-player"></div>
+    <div id="mw-guess" style="display: none;"></div>
+  </div>
 
   <script>
+    // =========== Game Switcher ===========
+    function showGame(gameName) {
+      document.getElementById('car-game-container').style.display = gameName === 'car' ? 'block' : 'none';
+      document.getElementById('mister-white-container').style.display = gameName === 'misterWhite' ? 'block' : 'none';
+    }
+    // Show car game by default
+    showGame('car');
+
+    // =========== Car Game Code ===========
     document.addEventListener('DOMContentLoaded', () => {
       const gameArea = document.getElementById('game-area');
       const player = document.getElementById('player');
@@ -258,6 +355,128 @@
         if (e.key === 'ArrowRight' || e.key === 'd') setPlayerX(playerX + 20);
       });
     });
+
+    // =========== Mister White Game Code ===========
+    const wordList = [
+      'Apple', 'Tiger', 'River', 'Guitar', 'Rocket',
+      'Moon', 'Ocean', 'Pencil', 'Pizza', 'Castle',
+      'Forest', 'Camera', 'Phone', 'Clock', 'Cloud',
+      'Shoe', 'Star', 'Mountain', 'Laptop', 'Chair',
+      'Car', 'Book', 'Tree', 'Coffee', 'Bottle',
+      'Window', 'Ball', 'Cat', 'Dog', 'Bread',
+      'Door', 'Fish', 'House', 'Ice', 'Key',
+      'Lamp', 'Map', 'Nose', 'Orange', 'Pen',
+      'Queen', 'Road', 'Sun', 'Table', 'Umbrella',
+      'Van', 'Water', 'Xylophone', 'Yacht', 'Zoo',
+      'Garden', 'Hat', 'Island', 'Jacket', 'Kite',
+      'Leaf', 'Milk', 'Nest', 'Ocean', 'Pillow',
+      'Quilt', 'Ring', 'Snow', 'Tree', 'Vase'
+    ];
+
+    let mwPlayers = [];
+    let currentPlayerIndex = 0;
+    let gameStarted = false;
+
+    const mwStartBtn = document.getElementById('start-mister-white');
+    const mwInfo = document.getElementById('mw-info');
+    const mwPlayerDiv = document.getElementById('mw-player');
+    const mwGuessDiv = document.getElementById('mw-guess');
+
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function startMisterWhiteGame() {
+      // Pick a random word for civilians
+      const word = wordList[Math.floor(Math.random() * wordList.length)];
+      
+      const totalPlayers = 4; // fixed 4 players, can be expanded
+      // Assign roles: 3 civilians + 1 white
+      const roles = Array(totalPlayers - 1).fill('civilian');
+      roles.push('white');
+      const shuffledRoles = shuffleArray(roles);
+
+      mwPlayers = shuffledRoles.map((role, index) => ({
+        id: index + 1,
+        role,
+        word: role === 'civilian' ? word : null
+      }));
+
+      currentPlayerIndex = 0;
+      gameStarted = true;
+      mwInfo.innerHTML = '';
+      mwGuessDiv.style.display = 'none';
+      mwPlayerDiv.innerHTML = '';
+      mwStartBtn.style.display = 'none';
+
+      showPlayerWord();
+    }
+
+    function showPlayerWord() {
+      if (currentPlayerIndex >= mwPlayers.length) {
+        // All players saw their words, now guess phase
+        startGuessPhase();
+        return;
+      }
+      const player = mwPlayers[currentPlayerIndex];
+      mwPlayerDiv.innerHTML = `
+        <p><strong>Player ${player.id}</strong>, it's your turn!</p>
+        <p>Your role is: <strong>${player.role === 'white' ? 'Mr. White' : 'Civilian'}</strong></p>
+        <p>Your word is: <strong>${player.word ? player.word : '(You have NO word!)'}</strong></p>
+        <button id="mw-next">Next Player</button>
+      `;
+      document.getElementById('mw-next').onclick = () => {
+        currentPlayerIndex++;
+        showPlayerWord();
+      };
+    }
+
+    function startGuessPhase() {
+      mwPlayerDiv.innerHTML = '';
+      mwInfo.innerHTML = `<p>All players have seen their words.</p><p>Now, guess who is Mr. White!</p>`;
+      mwGuessDiv.style.display = 'block';
+      mwGuessDiv.innerHTML = mwPlayers.map(p => `
+        <button data-id="${p.id}">Player ${p.id}</button>
+      `).join('');
+
+      mwGuessDiv.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => {
+          const guessedId = parseInt(btn.getAttribute('data-id'));
+          revealResult(guessedId);
+        };
+      });
+    }
+
+    function revealResult(guessedId) {
+      const whitePlayer = mwPlayers.find(p => p.role === 'white');
+      mwInfo.innerHTML = '';
+      mwGuessDiv.style.display = 'none';
+
+      if (guessedId === whitePlayer.id) {
+        mwInfo.innerHTML = `<p>You guessed Player ${guessedId} correctly! Mr. White loses.</p>`;
+      } else {
+        mwInfo.innerHTML = `<p>Wrong! Player ${whitePlayer.id} was Mr. White and wins.</p>`;
+      }
+      mwStartBtn.textContent = 'Play Again';
+      mwStartBtn.style.display = 'inline-block';
+    }
+
+    mwStartBtn.onclick = () => {
+      if (!gameStarted) {
+        startMisterWhiteGame();
+      } else {
+        // Restart
+        gameStarted = false;
+        mwInfo.innerHTML = '';
+        mwPlayerDiv.innerHTML = '';
+        mwGuessDiv.style.display = 'none';
+        mwStartBtn.textContent = 'Start Game';
+      }
+    };
   </script>
 
 </body>
